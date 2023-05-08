@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar.vue'
 </script>
 
 <template>
+<main>
     <h1>Login</h1>
 
     <form>
@@ -19,7 +20,15 @@ import Navbar from '../components/Navbar.vue'
             <input type="checkbox" class="form-check-input" id="exampleCheck1">
             <label class="form-check-label" for="exampleCheck1">Check me out</label>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
-
+</main>
 </template>
+
+<style scoped>
+
+main{
+    padding: 10%;
+}
+
+</style>
