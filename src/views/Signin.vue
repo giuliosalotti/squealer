@@ -2,28 +2,24 @@
 import { defineComponent } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import axios from 'axios';
-import router from '../router';
 
 export default defineComponent({
   name: 'Login', 
   data() {
     return {
       email: '',
-      password: '',
-      users: []
+      password: ''
     };
   },
   methods: {
-    async login() {
+    async signin() {
       event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/login/login', {
+      const response = await axios.post('http://localhost:3000/login/signin', {
         email: this.email,
         password: this.password,
       });
-      if(response.status == 200){
-        this.$router.push({ name: 'home', params: { email: this.email } });
-      }
+      // Gestisci la risposta dal server qui
     } catch (error) {
       // Gestisci gli errori qui
     }
@@ -38,7 +34,7 @@ export default defineComponent({
 
 <template>
 <main>
-    <h1>Login</h1>
+    <h1>Sign-in</h1>
 
     <form>
         <div class="mb-3">
@@ -54,7 +50,7 @@ export default defineComponent({
             <input type="checkbox" class="form-check-input" id="exampleCheck1">
             <label class="form-check-label" for="exampleCheck1">Check me out</label>
         </div>
-        <button @click="login()" type="submit" class="btn btn-primary">Login</button>
+        <button @click="signin()" type="submit" class="btn btn-primary">Sign-in</button>
     </form>
 </main>
 </template>
