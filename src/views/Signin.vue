@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar.vue';
 import axios from 'axios';
 
 export default defineComponent({
-  name: 'Login', 
+  name: 'Signin', 
   data() {
     return {
       email: '',

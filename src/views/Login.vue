@@ -22,7 +22,7 @@ export default defineComponent({
         password: this.password,
       });
       if(response.status == 200){
-        this.$router.push({ name: 'home', params: { email: this.email } });
+        this.$router.push({ name: 'Home', params: { email: this.email } });
       }
     } catch (error) {
       // Gestisci gli errori qui
