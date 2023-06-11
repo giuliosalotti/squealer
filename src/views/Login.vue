@@ -22,7 +22,8 @@ export default defineComponent({
         password: this.password,
       });
       if(response.status == 200){
-        this.$router.push({ name: 'Home', params: { email: this.email } });
+        const user = response.data.user;
+        localStorage.setItem('user', JSON.stringify(user));
       }
     } catch (error) {
       // Gestisci gli errori qui

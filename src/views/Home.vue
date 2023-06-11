@@ -7,21 +7,25 @@ import Message from '../components/Message.vue';
 import axios from 'axios';
 import router from '../router';
 
+
+
 export default defineComponent({
   name: 'Home', 
   data() {
     return {
-      email: '', 
-      messaggi:[]
+      messaggi:[],
+      email:'',
+      user: null,
     };
   },
+  
   created() {
+    this.user = JSON.parse(localStorage.getItem('user'));
+    this.email = this.user.email;
     this.caricaMessaggi('public');
   },
-  mounted() {
-    this.email = this.$route.params.email;
-    console.log(this.email);
-  },
+ 
+ 
   methods: {
       caricaMessaggi(destinatario) {
         axios.get(`http://localhost:3000/messaggi/${destinatario}`)
@@ -44,10 +48,10 @@ export default defineComponent({
 </script>
 
 <template>
-    <Navbar />
+    <Navbar :user="user" />
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
-            <Message :email="email" />
+            <Message :user="user" />
             <Feed :messaggi="messaggi" />
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">

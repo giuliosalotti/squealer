@@ -26,7 +26,7 @@
 import axios from 'axios';
 
 export default {
-    props: ['email'],
+    props: ['user'],
   data() {
     return {
       destinatario: 'public',
@@ -35,11 +35,14 @@ export default {
   },
   methods: {
     inviaMessaggio() {
+      
       const nuovoMessaggio = {
         destinazione: this.destinatario,
         testo: this.messaggio,
-        emailutente: this.email
+        emailutente: this.user.email,
+        fotoutente: this.user.foto,
       };
+      
 
       axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)
         .then(response => {

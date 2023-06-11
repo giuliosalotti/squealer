@@ -1,9 +1,3 @@
-<script script setup lang="ts">
-
-</script>
-
-
-
 <template>
 <!--
 
@@ -31,13 +25,38 @@
         <input class="form-control me-2" type="search" placeholder="Search user" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
+          <img class="avatar" :src="user.foto" alt="">
+
     </div>
   </div>
 </nav>
 </template>
 
 <style scoped>
+ @media (max-width: 768px) {
+    .avatar {
+      display: none;
+    }
+  }
  nav{
   background-color: black !important;
  }
+ .avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  margin-left: 20px;
+ }
 </style>
+
+<script>
+
+export default {
+    props: ['user'],
+  data() {
+    return {
+    };
+  },
+  
+};
+</script>

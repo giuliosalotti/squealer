@@ -26,6 +26,7 @@ mongoose.connect('mongodb://localhost:27017/Squeeler', {
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
+  foto: { type: String, required: true },
 });
 const User = mongoose.model('User', userSchema);
 
@@ -33,7 +34,8 @@ const User = mongoose.model('User', userSchema);
 const messaggioSchema = new mongoose.Schema({
   destinazione: { type: String, required: true },
   testo: { type: String, required: true },
-  emailutente: { type: String, required: true }
+  emailutente: { type: String, required: true },
+  fotoutente: { type: String, required: true },
 });
 const Messaggio = mongoose.model('Messaggio', messaggioSchema, 'messaggi');
 
@@ -46,8 +48,8 @@ app.use(bodyParser.json());
 
 // Route per creare un nuovo utente
 app.post('/login/signin', (req, res) => {
-  const { email, password } = req.body;
-  const newUser = new User({ email, password });
+  const { email, password, foto } = req.body;
+  const newUser = new User({ email, password, foto});
   newUser.save()
     .then(() => {
       res.status(201).json({ message: 'Utente creato con successo' });
@@ -69,7 +71,7 @@ app.post('/login/login', (req, res) => {
       if (user.password !== password) {
         return res.status(401).json({ message: 'Password errata' });
       }
-      res.status(200).json({ message: 'Login effettuato con successo' });
+      res.status(200).json({ message: 'Login effettuato con successo', user }); 
     })
     .catch(error => {
       console.error('Errore durante il login:', error);
@@ -79,8 +81,8 @@ app.post('/login/login', (req, res) => {
 
 //route aggiunta messaggio
 app.post('/messaggi', (req, res) => {
-  const { destinazione, testo, emailutente } = req.body;
-  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente });
+  const { destinazione, testo, emailutente, fotoutente } = req.body;
+  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente, fotoutente });
   nuovoMessaggio.save()
     .then(() => {
       res.status(201).json({ message: 'Messaggio pubblicato con successo' });
