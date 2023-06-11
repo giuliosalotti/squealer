@@ -24,7 +24,7 @@
         margin: 30px 0px;
     }
     .messaggibox{
-        padding: 50px 30px;
+        padding: 20px 30px 50px 30px;
     }
 
     .testo{

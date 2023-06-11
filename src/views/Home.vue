@@ -3,6 +3,7 @@ import { defineComponent } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import Feed from '../components/Feed.vue';
 import Channel from '../components/Channel.vue';
+import Message from '../components/Message.vue';
 import axios from 'axios';
 import router from '../router';
 
@@ -23,7 +24,8 @@ export default defineComponent({
   components: {
     Navbar,
     Feed,
-    Channel
+    Channel,
+    Message
   }
 });
 
@@ -33,6 +35,7 @@ export default defineComponent({
     <Navbar />
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
+            <Message :email="email" />
             <Feed />
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">

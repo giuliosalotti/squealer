@@ -37,5 +37,7 @@
 </template>
 
 <style scoped>
- 
+ nav{
+  background-color: black !important;
+ }
 </style>
