@@ -91,6 +91,18 @@ app.post('/messaggi', (req, res) => {
     });
 });
 
+// Route per ottenere i messaggi con un determinato destinatario
+app.get('/messaggi/:destinatario', (req, res) => {
+  const destinatario = req.params.destinatario;
+  Messaggio.find({ destinazione: destinatario })
+    .then(messaggi => {
+      res.status(200).json(messaggi);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei messaggi:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
+    });
+});
 
 
 // Avvia il server in ascolto su una porta specifica

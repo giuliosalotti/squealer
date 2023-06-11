@@ -35,7 +35,6 @@ export default {
   },
   methods: {
     inviaMessaggio() {
-        event.preventDefault();
       const nuovoMessaggio = {
         destinazione: this.destinatario,
         testo: this.messaggio,
