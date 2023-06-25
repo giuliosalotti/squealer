@@ -5,8 +5,12 @@
         <textarea class="form-control" aria-label="With textarea" placeholder="Voglio scrivere..." v-model="messaggio"></textarea>
     </div>
     <div class="input-group">
-        <span class="input-group-text" id="basic-addon1">@</span>
-        <input type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="destinatario">
+        <select class="form-select input-group-text">
+          <option value="@" selected>@</option>
+          <option value="§">§</option>
+          <option value="#">#</option>
+        </select>
+        <input id="inputtype" type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="destinatario">
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Pubblica</button>
     </div>
 </form>
@@ -19,6 +23,10 @@
     .form{
         padding: 40px 10px 0px 30px
     }
+    #inputtype{
+      width: 70%;
+    }
+    
 </style>
 
 

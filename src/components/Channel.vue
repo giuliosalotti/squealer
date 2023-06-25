@@ -2,19 +2,28 @@
     <div class="channelbox">
         <div class="d-flex" style="margin-bottom:60px;">
             <h2 class="me-5 titolo">Channels</h2>
-            <button type="button" class="btn btn-success btn-sm">Add channel</button>
+            <button type="button" class="btn btn-success btn-sm"  @click="show">{{tbtn1}}</button>
         </div>
-        <div class="canale d-flex">
-            <img  class="me-2 avatar" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1450&q=80">
-            <p>Il meglio del cinema italiano.</p>
-        </div>
-        <div class="canale d-flex">
-            <img  class="me-2 avatar" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1450&q=80">
-            <p>Il meglio del cinema italiano.</p>
-        </div>
-        <div class="canale d-flex">
-            <img  class="me-2 avatar" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1450&q=80">
-            <p>Il meglio del cinema italiano.</p>
+         <form id="adduser" v-if="addbox" @submit="aggiungiCanale">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Titolo canale" v-model="nomecanale">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Url immagine copertina" v-model="immagine">
+                </div>
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1">@</span>
+                        <input type="text" class="form-control" placeholder="aggiungi utenti creatori" aria-label="Username" aria-describedby="basic-addon1" v-model="nickcreatore">
+                        <button class="btn btn-success"  @click="addcreatore">+</button>
+                    </div>
+                    <span class="badge text-bg-success" v-for="creatore in creatori" :key="creatore.id">{{creatore.email}}</span>
+                </div>
+                <button type="submit" class="btn btn-success btn-sm">Crea canale</button>
+            </form>
+        <div class="canale d-flex" v-for="canale in canali" :key="canale.id">
+            <img  class="me-2 avatar" :src="canale.immagine">
+            <p>{{canale.nome}}</p>
         </div>
     </div>
 </template>
@@ -27,12 +36,110 @@
         padding: 50px 30px;
     }
     .avatar{
-        width: 30px;
-        height: 30px;
+        width: 35px;
+        height: 35px;
         border-radius: 30px;
         object-fit: cover;
     }
     .canale{
         margin: 20px 0px;
     }
+   #adduser{
+    margin-bottom: 50px;
+   } 
+   .badge{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 5px;
+   }
 </style>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import axios from 'axios';
+import router from '../router';
+
+export default {
+  name: 'Channel', 
+  data() {
+    return {
+      email:'',
+      user: null,
+      canali:[],
+      addbox: false,
+      tbtn1: "Add Channel",
+      nomecanale:"",
+      creatori: [],
+      nickcreatore:"",
+      immagine: "",
+    };
+  },
+  
+  created() {
+    this.user = JSON.parse(localStorage.getItem('user'));
+    this.email = this.user.email;
+    this.caricaCanali();
+  },
+ 
+ 
+  methods: {    
+
+      caricaCanali() {
+        axios.get('http://localhost:3000/canali')
+            .then(response => {
+            this.canali = response.data;
+            })
+            .catch(error => {
+            console.error('Errore durante il recupero dei messaggi:', error);
+            });
+    },
+    show(){
+        if(this.addbox){
+            this.tbtn1 = "Add Channel";
+            this.addbox=false;   
+        }else{
+            this.tbtn1 = "Cancel";
+            this.addbox=true;  
+        }      
+    },
+    aggiungiCanale(){
+        event.preventDefault();
+        this.creatori.push(this.user);
+        axios.post('http://localhost:3000/canali', {
+            nome: this.nomecanale,
+            immagine: this.immagine,
+            creatore: this.creatori
+        }).then(response => {
+            console.log('Canale aggiunto con successo:', response.data);
+        }).catch(error => {
+            console.error('Errore durante l\'aggiunta del canale:', error);
+        });
+    },
+    async addcreatore(){
+        event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3000/getuser', {
+            email: this.nickcreatore,
+        });
+            if(response.status == 200){
+                const utente = response.data.user;
+                //controlla se già non è stato inserito
+                if (!this.creatori.some(item => item.email === utente.email) && utente.email != this.user.email) {
+                    this.creatori.push(utente);
+                    this.nickcreatore = "";
+                }else{
+                    alert("utente già inserito!");
+                }
+            }else{
+                alert("Utente non trovato");
+            }
+        } catch (error) {
+
+        }
+    },
+  },
+  components: {
+  }
+};
+
+</script>

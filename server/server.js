@@ -39,6 +39,14 @@ const messaggioSchema = new mongoose.Schema({
 });
 const Messaggio = mongoose.model('Messaggio', messaggioSchema, 'messaggi');
 
+//schema collezione canali
+const canaleSchema = new mongoose.Schema({
+  nome: { type: String, required: true },
+  immagine: { type: String, required: true },
+  creatore: [{ type: userSchema, required: true }],
+});
+const Canale = mongoose.model('Canale', canaleSchema, 'canali');
+
 
 
 // Configura il parser del corpo della richiesta per ottenere i dati inviati dall'utente
@@ -79,6 +87,22 @@ app.post('/login/login', (req, res) => {
     });
 });
 
+//route getuserbyemail -- serve ad esempio per aggiungere un determinato utente ad un canale
+app.post('/getuser', (req, res) => {
+  const { email } = req.body;
+  User.findOne({ email })
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+      }
+      res.status(200).json({ message: 'utente trovato con successo', user }); 
+    })
+    .catch(error => {
+      console.error('Errore durante la ricerca:', error);
+      res.status(500).json({ message: 'Errore durante la ricerca' });
+    });
+});
+
 //route aggiunta messaggio
 app.post('/messaggi', (req, res) => {
   const { destinazione, testo, emailutente, fotoutente } = req.body;
@@ -105,6 +129,35 @@ app.get('/messaggi/:destinatario', (req, res) => {
       res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
     });
 });
+
+//route per ottenere la lista dei canali
+app.get('/canali', (req, res) => {
+  Canale.find()
+    .then(canali => {
+      res.status(200).json(canali);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei canali:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei canali' });
+    });
+});
+
+//route per aggiungere un canale
+app.post('/canali', (req, res) => {
+  const { nome, immagine, creatore } = req.body;
+  const nuovoCanale = new Canale({nome, immagine, creatore});
+  nuovoCanale.save()
+    .then(canale => {
+      res.status(200).json(canale);
+    })
+    .catch(error => {
+      console.error('Errore durante l\'aggiunta del canale:', error);
+      res.status(500).json({ message: 'Errore durante l\'aggiunta del canale' });
+    });
+});
+
+
+
 
 
 // Avvia il server in ascolto su una porta specifica

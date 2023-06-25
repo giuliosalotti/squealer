@@ -24,6 +24,7 @@ export default defineComponent({
       if(response.status == 200){
         const user = response.data.user;
         localStorage.setItem('user', JSON.stringify(user));
+        router.push({ name: 'Home' });
       }
     } catch (error) {
       // Gestisci gli errori qui
