@@ -6,10 +6,10 @@
         </div>
          <form id="adduser" v-if="addbox" @submit="aggiungiCanale">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Titolo canale" v-model="nomecanale">
+                    <input type="text" class="form-control" placeholder="Titolo canale" v-model="nomecanale" required>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Url immagine copertina" v-model="immagine">
+                    <input type="text" class="form-control" placeholder="Url immagine copertina" v-model="immagine" required>
                 </div>
                 <div class="mb-3">
                     <div class="input-group">
@@ -17,13 +17,17 @@
                         <input type="text" class="form-control" placeholder="aggiungi utenti creatori" aria-label="Username" aria-describedby="basic-addon1" v-model="nickcreatore">
                         <button class="btn btn-success"  @click="addcreatore">+</button>
                     </div>
-                    <span class="badge text-bg-success" v-for="creatore in creatori" :key="creatore.id">{{creatore.email}}</span>
+                    <span class="badge text-bg-success" v-for="creatore in creatori" :key="creatore.id">{{creatore.email}}
+                        <button class="btn btn-sm btn-light ml-2 bbadge" @click="rimuoviCreatore(creatore.email)">&times;</button>
+                    </span>
                 </div>
                 <button type="submit" class="btn btn-success btn-sm">Crea canale</button>
             </form>
         <div class="canale d-flex" v-for="canale in canali" :key="canale.id">
             <img  class="me-2 avatar" :src="canale.immagine">
-            <p>{{canale.nome}}</p>
+            <p class="channelname">{{canale.nome}}</p>
+            <button class="btn info" @click="handleClick"><i class="bi bi-lg bi-info-circle"></i></button>
+            <button class="btn info" @click="handleClick" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
         </div>
     </div>
 </template>
@@ -51,6 +55,24 @@
     margin-top: 10px;
     margin-bottom: 10px;
     margin-right: 5px;
+   }
+   .bbadge{
+    background-color: transparent;
+    border: none;
+    color: white;
+   }
+   .info{
+    height: 30px;
+    padding: 0px;
+   }
+   .bi{
+    color: #4b4b4b;
+    margin-left: 10px;
+    font-size: 20px;
+    font-weight: 800;
+   }
+   .channelname{
+    width: 50%;
    }
 </style>
 
@@ -103,7 +125,6 @@ export default {
         }      
     },
     aggiungiCanale(){
-        event.preventDefault();
         this.creatori.push(this.user);
         axios.post('http://localhost:3000/canali', {
             nome: this.nomecanale,
@@ -137,6 +158,13 @@ export default {
 
         }
     },
+    rimuoviCreatore(email) {
+        this.creatori = this.creatori.filter(creatore => creatore.email !== email);
+    },
+    //per abilitare il bottone cancella
+    isCreator(canale) {
+      return canale.creatore.some(creatore => creatore.email === this.user.email);
+    }
   },
   components: {
   }
