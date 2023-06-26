@@ -1,5 +1,5 @@
 <template>
-<form class="form" @submit="inviaMessaggio">
+<form class="form" @submit.prevent="inviaMessaggio">
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
     <div class="input-group">
         <textarea class="form-control" aria-label="With textarea" placeholder="Voglio scrivere..." v-model="messaggio"></textarea>
@@ -10,7 +10,7 @@
           <option value="§">§</option>
           <option value="#">#</option>
         </select>
-        <input id="inputtype" type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="destinatario">
+        <input id="inputtype" type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="dest">
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Pubblica</button>
     </div>
 </form>
@@ -34,16 +34,21 @@
 import axios from 'axios';
 
 export default {
-    props: ['user'],
+  props: ['user','destinatario'],
   data() {
     return {
-      destinatario: 'public',
-      messaggio: ''
+      messaggio: '',
+      dest: this.destinatario,
     };
   },
+
+  updated(){
+    this.dest = this.destinatario;
+  },
+  
+
   methods: {
     inviaMessaggio() {
-      
       const nuovoMessaggio = {
         destinazione: this.destinatario,
         testo: this.messaggio,
@@ -51,15 +56,16 @@ export default {
         fotoutente: this.user.foto,
       };
       
-
       axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)
         .then(response => {
           console.log('Messaggio inviato con successo:', response.data);
+          this.$emit('update');
         })
         .catch(error => {
           console.error('Errore durante l\'invio del messaggio:', error);
         });
-    }
+    },
+
   }
 };
 </script>

@@ -1,10 +1,10 @@
 <template>
     <div class="channelbox">
-        <div class="d-flex" style="margin-bottom:60px;">
+        <div class="d-flex" style="margin-bottom:35px;">
             <h2 class="me-5 titolo">Channels</h2>
             <button type="button" class="btn btn-success btn-sm"  @click="show">{{tbtn1}}</button>
         </div>
-         <form id="adduser" v-if="addbox" @submit="aggiungiCanale">
+         <form id="addchannel" v-if="addbox" @submit="aggiungiCanale">
                 <div class="mb-3">
                     <input type="text" class="form-control" placeholder="Titolo canale" v-model="nomecanale" required>
                 </div>
@@ -23,12 +23,14 @@
                 </div>
                 <button type="submit" class="btn btn-success btn-sm">Crea canale</button>
             </form>
-        <div class="canale d-flex" v-for="canale in canali" :key="canale.id">
+
+        <div class="canale d-flex" v-for="canale in canali" :key="canale.id" @click="choose(canale.nome)">
             <img  class="me-2 avatar" :src="canale.immagine">
             <p class="channelname">{{canale.nome}}</p>
-            <button class="btn info" @click="handleClick"><i class="bi bi-lg bi-info-circle"></i></button>
-            <button class="btn info" @click="handleClick" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
+            <button class="btn info" @click="getCreatorEmails(canale)"><i class="bi bi-lg bi-info-circle"></i></button>
+            <button class="btn info" @click="eliminaCanale(canale)" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
         </div>
+
     </div>
 </template>
 
@@ -48,8 +50,8 @@
     .canale{
         margin: 20px 0px;
     }
-   #adduser{
-    margin-bottom: 50px;
+   #addchannel{
+    margin-bottom: 60px;
    } 
    .badge{
     margin-top: 10px;
@@ -89,7 +91,7 @@ export default {
       user: null,
       canali:[],
       addbox: false,
-      tbtn1: "Add Channel",
+      tbtn1: "Aggiungi",
       nomecanale:"",
       creatori: [],
       nickcreatore:"",
@@ -102,11 +104,14 @@ export default {
     this.email = this.user.email;
     this.caricaCanali();
   },
+
+  
  
  
   methods: {    
-
-      caricaCanali() {
+     
+     //metodo per caricare la lista di canali
+    caricaCanali() {
         axios.get('http://localhost:3000/canali')
             .then(response => {
             this.canali = response.data;
@@ -115,15 +120,19 @@ export default {
             console.error('Errore durante il recupero dei messaggi:', error);
             });
     },
+
+    //metodo per mostrare il box di creazione di un canale
     show(){
         if(this.addbox){
-            this.tbtn1 = "Add Channel";
+            this.tbtn1 = "Aggiungi";
             this.addbox=false;   
         }else{
-            this.tbtn1 = "Cancel";
+            this.tbtn1 = "Annulla";
             this.addbox=true;  
         }      
     },
+
+    //metodo per aggiungere un canale 
     aggiungiCanale(){
         this.creatori.push(this.user);
         axios.post('http://localhost:3000/canali', {
@@ -136,6 +145,8 @@ export default {
             console.error('Errore durante l\'aggiunta del canale:', error);
         });
     },
+
+    //metodo per aggiungere un creatore prima di aver aggiunto il nuovo canale
     async addcreatore(){
         event.preventDefault();
         try {
@@ -158,13 +169,39 @@ export default {
 
         }
     },
+
+    //metodo per rimuovere un creatore prima di aver creato il canale
     rimuoviCreatore(email) {
         this.creatori = this.creatori.filter(creatore => creatore.email !== email);
     },
-    //per abilitare il bottone cancella
+
+    //metodo che abilita il bottone cancella solo se l'utente è il creatore di quel canale
     isCreator(canale) {
       return canale.creatore.some(creatore => creatore.email === this.user.email);
-    }
+    },
+
+    //metodo per eliminare un canale creato
+    eliminaCanale(canale) {
+      axios.delete(`http://localhost:3000/canali/${canale._id}`)
+        .then(response => {
+          console.log('Canale eliminato con successo');
+        })
+        .catch(error => {
+          console.error('Errore durante l\'eliminazione del canale:', error);
+        });
+    },
+
+    //metodo per leggere i creatori di un canale
+    getCreatorEmails(canale) {
+      alert("Canale creato da:" + canale.creatore.map(creatore => creatore.email).join(', '));
+    },
+
+    //metodo per caricare il feed di quel canale
+    choose(nomecanale) {
+      this.$emit('feed-change', nomecanale);
+    },
+
+
   },
   components: {
   }

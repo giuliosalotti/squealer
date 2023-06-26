@@ -16,18 +16,19 @@ export default defineComponent({
       messaggi:[],
       email:'',
       user: null,
+      destinatario:"public",
     };
   },
   
   created() {
     this.user = JSON.parse(localStorage.getItem('user'));
     this.email = this.user.email;
-    this.caricaMessaggi('public');
+    this.caricaMessaggi(this.destinatario);
   },
  
  
   methods: {
-      caricaMessaggi(destinatario) {
+    caricaMessaggi(destinatario) {
         axios.get(`http://localhost:3000/messaggi/${destinatario}`)
             .then(response => {
             this.messaggi = response.data;
@@ -35,7 +36,12 @@ export default defineComponent({
             .catch(error => {
             console.error('Errore durante il recupero dei messaggi:', error);
             });
-    }
+    },
+    updateFeed(newValue) {
+      this.destinatario = newValue;
+      this.caricaMessaggi(newValue);
+    },
+
   },
   components: {
     Navbar,
@@ -51,11 +57,11 @@ export default defineComponent({
     <Navbar :user="user" />
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
-            <Message :user="user" />
+            <Message :user="user" :destinatario="destinatario" @update="caricaMessaggi(this.destinatario)"/>
             <Feed :messaggi="messaggi" />
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">
-            <Channel />
+            <Channel @feed-change="updateFeed" />
         </div>
 
     </div>

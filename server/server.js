@@ -156,6 +156,19 @@ app.post('/canali', (req, res) => {
     });
 });
 
+//route per eliminare un canale
+app.delete('/canali/:id', (req, res) => {
+  const canaleId = req.params.id;
+  Canale.findByIdAndRemove(canaleId)
+    .then(() => {
+      res.status(200).json({ message: 'Canale eliminato con successo' });
+    })
+    .catch(error => {
+      console.error('Errore durante l\'eliminazione del canale:', error);
+      res.status(500).json({ message: 'Errore durante l\'eliminazione del canale' });
+    });
+});
+
 
 
 
