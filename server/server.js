@@ -36,6 +36,11 @@ const messaggioSchema = new mongoose.Schema({
   testo: { type: String, required: true },
   emailutente: { type: String, required: true },
   fotoutente: { type: String, required: true },
+  dataOra: { type: Date, required: true },
+  like: { type: Number, required: true },
+  dislike: { type: Number, required: true },
+  views: { type: Number, required: true },
+  categoria: { type: String, required: true },
 });
 const Messaggio = mongoose.model('Messaggio', messaggioSchema, 'messaggi');
 
@@ -105,8 +110,8 @@ app.post('/getuser', (req, res) => {
 
 //route aggiunta messaggio
 app.post('/messaggi', (req, res) => {
-  const { destinazione, testo, emailutente, fotoutente } = req.body;
-  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente, fotoutente });
+  const { destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria } = req.body;
+  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria });
   nuovoMessaggio.save()
     .then(() => {
       res.status(201).json({ message: 'Messaggio pubblicato con successo' });
@@ -114,6 +119,21 @@ app.post('/messaggi', (req, res) => {
     .catch((error) => {
       console.error('Errore durante la pubblicazione del messaggio:', error);
       res.status(500).json({ message: 'Errore durante la pubblicazione del messaggio' });
+    });
+});
+
+// route per l'aggiornamento di un messaggio per nuove reaction o cose così
+app.put('/messaggi/:id', (req, res) => {
+  const idMessaggio = req.params.id;
+  const nuovoMessaggio = req.body;
+  // Effettua l'aggiornamento del messaggio nel database
+  Messaggio.findByIdAndUpdate(idMessaggio, nuovoMessaggio, { new: true })
+    .then(messaggioAggiornato => {
+      res.status(200).json(messaggioAggiornato);
+    })
+    .catch(error => {
+      console.error('Errore durante l\'aggiornamento del messaggio:', error);
+      res.status(500).json({ message: 'Errore durante l\'aggiornamento del messaggio' });
     });
 });
 

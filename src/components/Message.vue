@@ -104,6 +104,11 @@ watch: {
           testo: this.messaggio,
           emailutente: this.user.email,
           fotoutente: this.user.foto,
+          dataOra: new Date(),
+          like: 0,
+          dislike: 0,
+          views: 0,
+          categoria:"Pubblico"
         };
         
         axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)
