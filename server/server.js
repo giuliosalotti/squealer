@@ -32,7 +32,7 @@ const User = mongoose.model('User', userSchema);
 
 //schema collezione messaggi
 const messaggioSchema = new mongoose.Schema({
-  destinazione: { type: String, required: true },
+  destinazione: [{ simbolo: String, destinatario: String }],
   testo: { type: String, required: true },
   emailutente: { type: String, required: true },
   fotoutente: { type: String, required: true },
@@ -120,7 +120,7 @@ app.post('/messaggi', (req, res) => {
 // Route per ottenere i messaggi con un determinato destinatario
 app.get('/messaggi/:destinatario', (req, res) => {
   const destinatario = req.params.destinatario;
-  Messaggio.find({ destinazione: destinatario })
+  Messaggio.find({ 'destinazione.destinatario': destinatario })
     .then(messaggi => {
       res.status(200).json(messaggi);
     })
