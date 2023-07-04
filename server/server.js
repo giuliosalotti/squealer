@@ -22,11 +22,67 @@ mongoose.connect('mongodb://localhost:27017/Squeeler', {
   process.exit(1);
 });
 
+//logica di aggiornamento giornaliero, settimanale e mensile
+
+async function aggiornaValorePerUtenti(type, value) {
+  try {
+    if(type=='M'){
+      await User.updateMany({}, { $set: { quotaM: value } });
+      console.log('Aggiornamento del valore completato con successo per tutti gli utenti.');
+    }else if(type=='W'){
+      await User.updateMany({}, { $set: { quotaW: value } });
+      console.log('Aggiornamento del valore completato con successo per tutti gli utenti.');
+    }else{
+      await User.updateMany({}, { $set: { quotaD: value } });
+      console.log('Aggiornamento del valore completato con successo per tutti gli utenti.');
+    }
+  } catch (error) {
+    console.error('Errore durante l\'aggiornamento del valore:', error);
+  }
+}
+
+
+function eseguiAggiornamento() {
+  const giornaliero = 500;
+  const settimanale = 3500;
+  const mensile = 14000;
+  
+  // Imposta l'intervallo di esecuzione per l'inizio di ogni mese (il primo giorno del mese)
+  setInterval(() => {
+    // Verifica se è l'inizio di un nuovo mese
+    const dataCorrente = new Date();
+    const giornoMese = dataCorrente.getDate();
+    const ora = dataCorrente.getHours();
+    const minuti = dataCorrente.getMinutes();
+    const giornoSettimana = dataCorrente.getDay();
+
+    if (giornoMese === 1 && ora === 0 && minuti === 0) {
+      // Esegui l'aggiornamento mensile del valore per tutti gli utenti
+      aggiornaValorePerUtenti('M', mensile);
+    }
+    if(giornoSettimana === 1 && ora === 0 && minuti === 0){
+      //esegui l'aggiornamento settimanale
+      aggiornaValorePerUtenti('W', settimanale);
+    }
+    console.log(minuti);
+    if(ora === 21 && minuti === 0){
+      //esegui l'aggiornamento giornaliero
+      aggiornaValorePerUtenti('D', giornaliero);
+    }
+  }, 59000); // Controlla ogni minuto se è l'inizio di un nuovo mese
+}
+
+
+
+
 // schema collezione users
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   foto: { type: String, required: true },
+  quotaD: { type: Number, required: true },
+  quotaW: { type: Number, required: true },
+  quotaM: { type: Number, required: true },
 });
 const User = mongoose.model('User', userSchema);
 
@@ -61,8 +117,8 @@ app.use(bodyParser.json());
 
 // Route per creare un nuovo utente
 app.post('/login/signin', (req, res) => {
-  const { email, password, foto } = req.body;
-  const newUser = new User({ email, password, foto});
+  const { email, password, foto, quotaD, quotaW, quotaM } = req.body;
+  const newUser = new User({ email, password, foto, quotaD, quotaW, quotaM});
   newUser.save()
     .then(() => {
       res.status(201).json({ message: 'Utente creato con successo' });
@@ -191,8 +247,8 @@ app.delete('/canali/:id', (req, res) => {
 
 
 
-
-
+//avviare la funzione di controllo della quota
+eseguiAggiornamento();
 // Avvia il server in ascolto su una porta specifica
 app.listen(3000, () => {
   console.log('Server avviato sulla porta 3000');

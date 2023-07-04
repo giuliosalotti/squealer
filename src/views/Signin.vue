@@ -20,6 +20,9 @@ export default defineComponent({
         email: this.email,
         password: this.password,
         foto: this.foto,
+        quotaD: 500,
+        quotaW: 3500,
+        quotaM: 14000,
       });
       // Gestisci la risposta dal server qui
     } catch (error) {
