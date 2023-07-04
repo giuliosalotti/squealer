@@ -64,16 +64,12 @@ function eseguiAggiornamento() {
       //esegui l'aggiornamento settimanale
       aggiornaValorePerUtenti('W', settimanale);
     }
-    console.log(minuti);
     if(ora === 21 && minuti === 0){
       //esegui l'aggiornamento giornaliero
       aggiornaValorePerUtenti('D', giornaliero);
     }
   }, 59000); // Controlla ogni minuto se è l'inizio di un nuovo mese
 }
-
-
-
 
 // schema collezione users
 const userSchema = new mongoose.Schema({

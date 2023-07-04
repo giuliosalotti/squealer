@@ -1,8 +1,10 @@
 <template>
 <form class="form" @submit.prevent="inviaMessaggio">
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
+    
     <div class="input-group">
-        <textarea class="form-control" aria-label="With textarea" placeholder="Voglio scrivere..." v-model="messaggio"></textarea>
+        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." v-model="messaggio" @input.once="getQuota" @input="countQuota"></textarea>
+         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
     </div>
     <div class="input-group">
         <select class="form-select input-group-text" v-model="simbolo">
@@ -42,6 +44,9 @@
     border: none;
     color: white;
    }
+   .messaggio{
+    z-index: 0 !important;
+   }
     
 </style>
 
@@ -58,6 +63,10 @@ export default {
       simbolo:'§',
       creatori: [],
       destinatari:[],
+      quotaD:500,
+      quotaW:3500,
+      quotaM:14000,
+      quotadisposizione:500,
     };
   },
 
@@ -69,6 +78,33 @@ watch: {
   
 
   methods: {
+
+    //metodo per ottenere la quota nel momento in cui inizi a scrivere il messaggio
+    async getQuota(){
+      event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3000/getuser', {
+            email: this.user.email,
+        });
+            if(response.status == 200){
+                const utente = response.data.user;
+                this.quotaD = utente.quotaD;
+                this.quotaW = utente.quotaW;
+                this.quotaM = utente.quotaM;
+                this.quotadisposizione = utente.quotaD;
+            }
+        } catch (error) {
+          console.log(error);
+        }
+    },
+    //metodo locale per l'aggiornamento della quota
+    countQuota(){
+        this.quotadisposizione = this.quotaD-this.messaggio.length;
+        var q = this.quotadisposizione;
+        if(q===0){
+          alert("Quota giornaliera finita. Vuoi passare alla quota settimanale?");
+        }
+    },
 
     //metodo per rimuovere un destinatario prima di aver inviato il messaggio
     rimuoviDestinatario(identificatore) {
