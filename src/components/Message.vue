@@ -194,34 +194,36 @@ watch: {
               console.log('Messaggio inviato con successo:', response.data);
               this.$emit('update');
               //aggiorno quota
-              if(this.limitD){
-                this.quotaD = 0;
-              }else{
-                this.quotaD -= this.messaggio.length;
+              if(this.riduzione){
+                if(this.limitD){
+                  this.quotaD = 0;
+                }else{
+                  this.quotaD -= this.messaggio.length;
+                }
+                if(this.limitW){
+                  this.quotaW = 0;
+                }else{
+                  this.quotaW -= this.messaggio.length;
+                }
+                if(this.limitM){
+                  this.quotaM = 0;
+                }else{
+                  this.quotaM -= this.messaggio.length;
+                }
+                //chiamo il server per l'aggiornamento
+                try {
+                  const response = axios.put('http://localhost:3000/users', {
+                    email: this.user.email,
+                    quotaD: this.quotaD,
+                    quotaW: this.quotaW,
+                    quotaM: this.quotaM
+                  });
+                  console.log('Quotas updated successfully:', response.data);
+                } catch (error) {
+                  console.error('Error updating quotas:', error);
+                }
+                //
               }
-              if(this.limitW){
-                this.quotaW = 0;
-              }else{
-                this.quotaW -= this.messaggio.length;
-              }
-              if(this.limitM){
-                this.quotaM = 0;
-              }else{
-                this.quotaM -= this.messaggio.length;
-              }
-              //chiamo il server per l'aggiornamento
-              try {
-                const response = axios.put('http://localhost:3000/users', {
-                  email: this.user.email,
-                  quotaD: this.quotaD,
-                  quotaW: this.quotaW,
-                  quotaM: this.quotaM
-                });
-                console.log('Quotas updated successfully:', response.data);
-              } catch (error) {
-                console.error('Error updating quotas:', error);
-              }
-              //
             })
             .catch(error => {
               console.error('Errore durante l\'invio del messaggio:', error);
