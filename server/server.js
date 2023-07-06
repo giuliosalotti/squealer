@@ -179,6 +179,25 @@ app.put('/users', (req, res) => {
       res.status(500).json({ message: 'Errore durante l\'aggiornamento delle quote' });
     });
 });
+//route per la modifica della password
+app.put('/users/changepassword', (req, res) => {
+  const { email, password } = req.body;
+  User.findOne({ email })
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+      }
+      user.password = password;
+      return user.save();
+    })
+    .then(updatedUser => {
+      res.status(200).json({ message: 'Password aggiornata con successo' });
+    })
+    .catch(error => {
+      console.error('Errore durante l\'aggiornamento della password:', error);
+      res.status(500).json({ message: 'Errore durante l\'aggiornamento della password' });
+    });
+});
 
 
 //route aggiunta messaggio
