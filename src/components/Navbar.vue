@@ -22,8 +22,7 @@
         </li>
       </ul>
       <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search user" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn btn-outline-success" id="logout" type="submit" @click="logout">Logout</button>
       </form>
           <a href="/profile"><img class="avatar" :src="user.foto" alt=""></a>
 
@@ -47,15 +46,23 @@
   border-radius: 40px;
   margin-left: 20px;
  }
+ 
 </style>
 
 <script>
+import router from '../router';
 
 export default {
     props: ['user'],
   data() {
     return {
     };
+  },
+  methods:{
+    logout(){
+      localStorage.removeItem('user');
+      router.push({ name: 'Login' });
+    }
   },
   
 };

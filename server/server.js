@@ -242,6 +242,19 @@ app.get('/messaggi/:destinatario', (req, res) => {
     });
 });
 
+// Route per ottenere i messaggi di un determinato utente
+app.get('/messaggi/vip/:emailutente', (req, res) => {
+  const emailutente = req.params.emailutente;
+  Messaggio.find({ emailutente })
+    .then(messaggi => {
+      res.status(200).json(messaggi);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei messaggi:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
+    });
+});
+
 //route per ottenere la lista dei canali
 app.get('/canali', (req, res) => {
   Canale.find()
