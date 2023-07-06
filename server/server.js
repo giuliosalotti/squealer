@@ -64,7 +64,7 @@ function eseguiAggiornamento() {
       //esegui l'aggiornamento settimanale
       aggiornaValorePerUtenti('W', settimanale);
     }
-    if(ora === 21 && minuti === 0){
+    if(ora === 0 && minuti === 0){
       //esegui l'aggiornamento giornaliero
       aggiornaValorePerUtenti('D', giornaliero);
     }
@@ -159,6 +159,27 @@ app.post('/getuser', (req, res) => {
       res.status(500).json({ message: 'Errore durante la ricerca' });
     });
 });
+
+//route per aggiornare quote
+app.put('/users', (req, res) => {
+  const { email, quotaD, quotaW, quotaM } = req.body;
+  User.findOneAndUpdate(
+    { email },
+    { $set: { quotaD, quotaW, quotaM } },
+    { new: true }
+  )
+    .then(updatedUser => {
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'Utente non trovato' });
+      }
+      res.status(200).json({ message: 'Quote aggiornate con successo', user: updatedUser });
+    })
+    .catch(error => {
+      console.error('Errore durante l\'aggiornamento delle quote:', error);
+      res.status(500).json({ message: 'Errore durante l\'aggiornamento delle quote' });
+    });
+});
+
 
 //route aggiunta messaggio
 app.post('/messaggi', (req, res) => {

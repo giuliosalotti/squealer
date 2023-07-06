@@ -3,7 +3,7 @@
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
     
     <div class="input-group">
-        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." v-model="messaggio" @input.once="getQuota" @input="countQuota"></textarea>
+        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota"></textarea>
          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
     </div>
     <div class="input-group">
@@ -66,7 +66,11 @@ export default {
       quotaD:500,
       quotaW:3500,
       quotaM:14000,
-      quotadisposizione:500,
+      quotadisposizione:null,
+      riduzione:false,
+      limitD:false,
+      limitW:null,
+      limitM:null,
     };
   },
 
@@ -75,8 +79,7 @@ watch: {
       this.dest = newValue;
     },
   },
-  
-
+ 
   methods: {
 
     //metodo per ottenere la quota nel momento in cui inizi a scrivere il messaggio
@@ -99,11 +102,46 @@ watch: {
     },
     //metodo locale per l'aggiornamento della quota
     countQuota(){
+      if(this.limitD==false){
         this.quotadisposizione = this.quotaD-this.messaggio.length;
-        var q = this.quotadisposizione;
-        if(q===0){
-          alert("Quota giornaliera finita. Vuoi passare alla quota settimanale?");
-        }
+      }
+      if(this.quotaD-this.messaggio.length==0){
+        alert("Vuoi passare alla quota settimanale?");
+        this.limitD = true;
+        this.limitW = false;
+        this.quotadisposizione = this.quotaW-this.messaggio.length;
+      }
+      if(this.limitW==false){
+        this.quotadisposizione = this.quotaW-this.messaggio.length;
+      }
+      if(this.quotaW-this.messaggio.length==0){
+        alert("Vuoi passare alla quota mensile?");
+        this.limitW = true;
+        this.limitM = false;
+        this.quotadisposizione = this.quotaM-this.messaggio.length;
+      }
+      if(this.limitM==false){
+          this.quotadisposizione = this.quotaM-this.messaggio.length;
+      }
+      if(this.quotaM-this.messaggio.length==0){
+          alert("Hai finito tutti i caratteri a disposizione");
+          this.limitM = true;
+      }
+      //controllo se quando tutto è bloccato, l'utente sta cancellando caratteri
+      if(this.quotaD-this.messaggio.length>0){
+        this.limitM=null;
+        this.limitW=null;
+        this.limitD=false;
+      }else if(this.quotaW-this.messaggio.length>0){
+        this.limitM=null;
+        this.limitW=false;
+        this.limitD=true;
+      }else if(this.quotaM-this.messaggio.length>0){
+        this.limitM=false;
+        this.limitW=true;
+        this.limitD=true;
+      }
+      console.log(this.quotadisposizione);
     },
 
     //metodo per rimuovere un destinatario prima di aver inviato il messaggio
@@ -117,6 +155,9 @@ watch: {
 
     inviaMessaggio() {
       this.destinatari.forEach(destinatario => {
+        if(destinatario.simbolo == '§' || destinatario.simbolo == '#'){
+          this.riduzione = true;
+        }
         if(destinatario.simbolo == '#'){
           //deve creare il canale estemporaneo
           this.creatori.push(this.user);
@@ -135,27 +176,59 @@ watch: {
     },
 
     send(){
-       const nuovoMessaggio = {
-          destinazione: this.destinatari,
-          testo: this.messaggio,
-          emailutente: this.user.email,
-          fotoutente: this.user.foto,
-          dataOra: new Date(),
-          like: 0,
-          dislike: 0,
-          views: 0,
-          categoria:"Pubblico"
-        };
-        
-        axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)
-          .then(response => {
-            console.log('Messaggio inviato con successo:', response.data);
-            this.$emit('update');
-          })
-          .catch(error => {
-            console.error('Errore durante l\'invio del messaggio:', error);
-          });
+
+        const nuovoMessaggio = {
+            destinazione: this.destinatari,
+            testo: this.messaggio,
+            emailutente: this.user.email,
+            fotoutente: this.user.foto,
+            dataOra: new Date(),
+            like: 0,
+            dislike: 0,
+            views: 0,
+            categoria:"Pubblico"
+          };
+          
+          axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)
+            .then(response => {
+              console.log('Messaggio inviato con successo:', response.data);
+              this.$emit('update');
+              //aggiorno quota
+              if(this.limitD){
+                this.quotaD = 0;
+              }else{
+                this.quotaD -= this.messaggio.length;
+              }
+              if(this.limitW){
+                this.quotaW = 0;
+              }else{
+                this.quotaW -= this.messaggio.length;
+              }
+              if(this.limitM){
+                this.quotaM = 0;
+              }else{
+                this.quotaM -= this.messaggio.length;
+              }
+              //chiamo il server per l'aggiornamento
+              try {
+                const response = axios.put('http://localhost:3000/users', {
+                  email: this.user.email,
+                  quotaD: this.quotaD,
+                  quotaW: this.quotaW,
+                  quotaM: this.quotaM
+                });
+                console.log('Quotas updated successfully:', response.data);
+              } catch (error) {
+                console.error('Error updating quotas:', error);
+              }
+              //
+            })
+            .catch(error => {
+              console.error('Errore durante l\'invio del messaggio:', error);
+            });
+      
     }
+
 
   }
 };
