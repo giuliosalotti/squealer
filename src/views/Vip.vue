@@ -48,6 +48,24 @@ export default defineComponent({
             console.error('Errore durante la richiesta dei messaggi:', error);
         });
     },
+    removeUrl(testo) {
+      const splitArray = testo.split("VIDEO:");
+      if (splitArray.length > 1) {
+        return splitArray[0].trim();
+      }else{
+        const splitArray = testo.split("FOTO:");
+        if (splitArray.length > 1) {
+          return splitArray[0].trim();
+        }else{
+          const splitArray = testo.split("MAPPA:");
+          if (splitArray.length > 1) {
+            return splitArray[0].trim();
+          }else{
+            return testo;
+          }
+        }
+      }
+    },
 
   },
   components: {
@@ -72,7 +90,7 @@ export default defineComponent({
                 <li class="list-group-item d-flex justify-content-between align-items-start" v-for="trend in trends" :key="trend._id">
                     <div class="ms-2 me-auto">
                     <div class="fw-bold">{{trend.emailutente}}</div>
-                    {{trend.testo}}
+                    {{ removeUrl(trend.testo) }}
                     </div>
                     <span class="badge bg-danger rounded-pill">{{trend.views}}</span>
                 </li>
