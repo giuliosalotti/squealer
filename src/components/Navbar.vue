@@ -15,7 +15,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-            <RouterLink class="nav-link active" to="/home">Home</RouterLink>
+            <RouterLink class="nav-link active" to="/home" @click="home">Home</RouterLink>
         </li>
         <li class="nav-item">
           <RouterLink class="nav-link active" to="/About">About</RouterLink>
@@ -67,6 +67,11 @@ export default {
     this.checkvip(this.user);
   },
   methods:{
+    home(){
+      if (this.$route.name === 'Home') {
+        window.location.reload();
+      } 
+    },
     logout(){
       localStorage.removeItem('user');
       router.push({ name: 'Login' });

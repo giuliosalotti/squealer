@@ -207,9 +207,16 @@ watch: {
     },
 
     send(){
-        const messaggio = this.messaggio;
+        var dasottrarre = this.messaggio.length;
+        var messaggio = this.messaggio;
         if(this.tipologia!=""){
-          messaggio = messaggio + " "+this.tipologia+":"+this.url;
+          //se il file multimediale supera i limiti non lo inserisce
+          if(dasottrarre+125 <= this.quotaD || dasottrarre+125 <= this.quotaW || dasottrarre+125 <= this.quotaM){
+            dasottrarre += 125;
+            messaggio = messaggio + " "+this.tipologia+":"+this.url;
+          }else{
+            alert("Non abbiamo incluso l'immagine perchè non avevi abbastanza caratteri a disposizione!");
+          }
         }
         const nuovoMessaggio = {
             destinazione: this.destinatari,
@@ -232,17 +239,17 @@ watch: {
                 if(this.limitD){
                   this.quotaD = 0;
                 }else{
-                  this.quotaD -= this.messaggio.length;
+                  this.quotaD -= dasottrarre;
                 }
                 if(this.limitW){
                   this.quotaW = 0;
                 }else{
-                  this.quotaW -= this.messaggio.length;
+                  this.quotaW -= dasottrarre;
                 }
                 if(this.limitM){
                   this.quotaM = 0;
                 }else{
-                  this.quotaM -= this.messaggio.length;
+                  this.quotaM -= dasottrarre;
                 }
                 //chiamo il server per l'aggiornamento
                 try {
