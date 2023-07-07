@@ -20,9 +20,6 @@
         <li class="nav-item">
           <RouterLink class="nav-link active" to="/About">About</RouterLink>
         </li>
-        <li class="nav-item" v-if="showVipButton">
-          <RouterLink class="nav-link active" to="/vip">Vip Dashboard</RouterLink>
-        </li>
       </ul>
       <form class="d-flex" role="search">
         <button class="btn btn-outline-success" id="logout" type="submit" @click="logout">Logout</button>
@@ -41,7 +38,7 @@
     }
   }
  nav{
-  background-color: black !important;
+    background-color: rgb(242, 102, 102) !important;
  }
  .avatar{
   width: 40px;
@@ -49,43 +46,28 @@
   border-radius: 40px;
   margin-left: 20px;
  }
- 
+ #logout{
+    background-color: white;
+    border-color: white;
+    border: 0px;
+    color:  rgb(242, 102, 102);
+ }
 </style>
 
 <script>
 import router from '../router';
-import axios from 'axios';
 
 export default {
     props: ['user'],
   data() {
     return {
-      showVipButton: false,
     };
-  },
-  created() {
-    this.checkvip(this.user);
   },
   methods:{
     logout(){
       localStorage.removeItem('user');
       router.push({ name: 'Login' });
-    },
-    checkvip(user){
-      axios.get(`http://localhost:3000/vip/check/${user.email}`)
-      .then(response => {
-        const isVip = response.data.isVip;
-        if (isVip) {
-          this.showVipButton = true;
-        } else {
-          this.showVipButton = false;
-        }
-      })
-      .catch(error => {
-        console.error('Errore durante la verifica dell\'utente VIP:', error);
-      });
-    },
-
+    }
   },
   
 };

@@ -104,7 +104,11 @@ const canaleSchema = new mongoose.Schema({
 });
 const Canale = mongoose.model('Canale', canaleSchema, 'canali');
 
-
+//schema collezione vip
+const vipSchema = new mongoose.Schema({
+  email: { type: String, required: true },
+});
+const Vip = mongoose.model('Vip', vipSchema, 'vip');
 
 // Configura il parser del corpo della richiesta per ottenere i dati inviati dall'utente
 app.use(bodyParser.json());
@@ -254,6 +258,41 @@ app.get('/messaggi/vip/:emailutente', (req, res) => {
       res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
     });
 });
+
+//top 10 trend
+app.get('/vip/trends', (req, res) => {
+  Messaggio.find()
+    .sort({ views: -1 })
+    .limit(10)
+    .then(messaggi => {
+      res.status(200).json(messaggi);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei messaggi:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
+    });
+});
+
+//l'utente è vip o no?
+app.get('/vip/check/:email', (req, res) => {
+  const email = req.params.email;
+  Vip.findOne({ email: email })
+    .then(vip => {
+      if (vip) {
+        // L'utente è un VIP, invia una risposta con un flag true
+        res.status(200).json({ isVip: true });
+      } else {
+        // L'utente non è un VIP, invia una risposta con un flag false
+        res.status(200).json({ isVip: false });
+      }
+    })
+    .catch(error => {
+      console.error('Errore durante la verifica dell\'utente VIP:', error);
+      res.status(500).json({ message: 'Errore durante la verifica dell\'utente VIP' });
+    });
+});
+
+
 
 //route per ottenere la lista dei canali
 app.get('/canali', (req, res) => {

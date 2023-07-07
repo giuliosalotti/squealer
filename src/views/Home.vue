@@ -40,7 +40,7 @@ export default defineComponent({
     updateFeed(newValue) {
       this.destinatario = newValue;
       this.caricaMessaggi(newValue);
-    },
+    }
 
   },
   components: {

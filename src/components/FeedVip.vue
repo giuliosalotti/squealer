@@ -1,6 +1,6 @@
 <template>
     <div class="messaggibox">
-        <h2 class="titolo">Attività</h2>
+        <h2 class="titolo">Le tue attività</h2>
         <div class="messaggio" v-for="(messaggio, i) in messaggi" :key="messaggio._id">
             <div class="d-flex boxautore">
             <img class="avatar" :src="messaggio.fotoutente" alt="">
@@ -9,9 +9,20 @@
             <p class="testo">{{ messaggio.testo }} </p>
             <div class="row footerbox">
                 <div class="statistiche">
-                    <p>Visualizzazioni: {{messaggio.views}}</p>
-                    <p>Numero di like: {{messaggio.like}}</p>
-                    <p>Numero di dislike: {{messaggio.dislike}}</p>
+                    <div class="row">
+                        <div class="col-2 feature">
+                            <i class="bi bi-eye"></i>
+                            <p class="punteggio">{{messaggio.views}}</p>
+                        </div>
+                        <div class="col-2 feature">
+                            <i class="bi bi-emoji-heart-eyes"></i>
+                            <p class="punteggio">{{messaggio.like}}</p>
+                        </div>
+                        <div class="col-2 feature">
+                            <i class="bi bi-emoji-angry"></i>
+                            <p class="punteggio">{{messaggio.dislike}}</p>
+                        </div>
+                    </div>
                     <p class="categoria">{{messaggio.categoria}}</p>
                     <p class="date">{{getdatebyindex(i).toLocaleDateString()}} - {{getdatebyindex(i).toLocaleTimeString()}}</p>
                 </div>
@@ -21,8 +32,18 @@
 </template>
 
 <style scoped>
+    .punteggio{
+        font-weight: bold;
+    }
+    .feature{
+        background-color: rgb(236 236 236);
+        padding: 20px;
+        margin: 20px;
+        border-radius: 20px;
+        text-align: center;
+    }
     .titolo{
-        margin: 10px 0px 30px 0px;
+        margin: 10px 0px 50px 0px;
     }
     .messaggio{
         background-color: rgb(242 102 102 / 20%);;
@@ -31,7 +52,7 @@
         margin: 30px 0px;
     }
     .messaggibox{
-        padding: 20px 30px 50px 30px;
+        padding: 50px 30px 50px 30px;
     }
 
     .testo{
