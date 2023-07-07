@@ -20,8 +20,33 @@
           <button class="btn btn-sm btn-light ml-2 bbadge" @click="rimuoviDestinatario(destinatario.destinatario)">&times;</button>
       </span>
     </div>
+    <button class="btn btn-dark" type="button" id="upload" data-bs-toggle="modal" data-bs-target="#media">Upload Media</button>
     <button class="btn btn-success" type="submit" id="button-addon2">Pubblica</button>
 </form>
+
+<!-- media upload -->
+<div class="modal fade" id="media" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Inserisci media</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <select class="form-select" v-model="tipologia">
+          <option value="FOTO" selected>Foto</option>
+          <option value="VIDEO">Video</option>
+          <option value="MAPPA">Mappa</option>
+        </select>
+        <input id="inputtype" type="text" class="form-control" placeholder="url" v-model="url">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aggiungi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </template>
 
 <style scoped>
@@ -47,6 +72,9 @@
    .messaggio{
     z-index: 0 !important;
    }
+   #upload{
+    margin-right: 20px;
+   }
     
 </style>
 
@@ -71,6 +99,8 @@ export default {
       limitD:false,
       limitW:null,
       limitM:null,
+      url:"",
+      tipologia:"",
     };
   },
 
@@ -179,7 +209,7 @@ watch: {
 
         const nuovoMessaggio = {
             destinazione: this.destinatari,
-            testo: this.messaggio,
+            testo: this.messaggio + " "+this.tipologia+":"+this.url,
             emailutente: this.user.email,
             fotoutente: this.user.foto,
             dataOra: new Date(),

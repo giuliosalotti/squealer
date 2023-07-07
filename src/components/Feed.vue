@@ -6,7 +6,10 @@
             <img class="avatar" :src="messaggio.fotoutente" alt="">
             <p class="email">{{messaggio.emailutente}}</p>
             </div>
-            <p class="testo">{{ messaggio.testo }} </p>
+            <p class="testo">{{ removeUrl(messaggio.testo) }} </p>
+            <img v-if="messaggio.testo.includes('FOTO')" :src="getImageSrc(messaggio.testo)" class="media">
+            <video class="media" v-if="messaggio.testo.includes('VIDEO')" :src="getVideoUrl(messaggio.testo)" controls></video>
+            <iframe v-if="messaggio.testo.includes('MAPPA')" :src="getMapUrl(messaggio.testo)" class="media" frameborder="0" style="border:0" allowfullscreen></iframe>
             <div class="row footerbox">
                 <div class="col-4">
                     <button class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
@@ -75,6 +78,10 @@
     font-weight: bold;
     color: green;
    }
+   .media{
+    max-width: 80%;
+    max-height: 80%;
+   }
 </style>
 
 <script>
@@ -88,6 +95,46 @@ export default {
     };
   },
   methods: {
+    removeUrl(testo) {
+      const splitArray = testo.split("VIDEO:");
+      if (splitArray.length > 1) {
+        return splitArray[0].trim();
+      }else{
+        const splitArray = testo.split("FOTO:");
+        if (splitArray.length > 1) {
+          return splitArray[0].trim();
+        }else{
+          const splitArray = testo.split("MAPPA:");
+          if (splitArray.length > 1) {
+            return splitArray[0].trim();
+          }else{
+            return testo;
+          }
+        }
+      }
+    },
+    getImageSrc(testo) {
+      const splitArray = testo.split("FOTO:");
+      if (splitArray.length > 1) {
+        return splitArray[1].trim();
+      }
+      return ""; // Ritorna una stringa vuota se il formato non è corretto
+    },
+    getVideoUrl(testo) {
+      const splitArray = testo.split("VIDEO:");
+      if (splitArray.length > 1) {
+        return splitArray[1].trim();
+      }
+      return ""; // Ritorna una stringa vuota se il formato non è corretto
+    },
+    getMapUrl(testo) {
+      const splitArray = testo.split("MAPPA:");
+      if (splitArray.length > 1) {
+        return splitArray[1].trim();
+      }
+      return ""; // Ritorna una stringa vuota se il formato non è corretto
+    },
+    
     getdatebyindex(i){
         const d = new Date(this.messaggi[i].dataOra);
         return d;
