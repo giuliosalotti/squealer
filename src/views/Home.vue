@@ -58,7 +58,7 @@ export default defineComponent({
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
             <Message :user="user" :destinatario="destinatario" @update="caricaMessaggi(this.destinatario)"/>
-            <Feed :messaggi="messaggi" />
+            <Feed :messaggi="messaggi" :log="true"/>
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">
             <Channel @feed-change="updateFeed" />

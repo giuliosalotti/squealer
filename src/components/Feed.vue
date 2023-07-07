@@ -12,9 +12,9 @@
             <iframe v-if="messaggio.testo.includes('MAPPA')" :src="getMapUrl(messaggio.testo)" class="media" frameborder="0" style="border:0" allowfullscreen></iframe>
             <div class="row footerbox">
                 <div class="col-4">
-                    <button class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
-                    <button class="btn reaction" @click="incrementaLike(messaggio._id)" >{{messaggio.like}}  <i class="bi bi-emoji-heart-eyes"></i></button>
-                    <button class="btn reaction" @click="decrementaLike(messaggio._id)">{{messaggio.dislike}}  <i class="bi bi-emoji-angry"></i></button>
+                    <button v-if="log" class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
+                    <button v-if="log" class="btn reaction" @click="incrementaLike(messaggio._id)" >{{messaggio.like}}  <i class="bi bi-emoji-heart-eyes"></i></button>
+                    <button v-if="log" class="btn reaction" @click="decrementaLike(messaggio._id)">{{messaggio.dislike}}  <i class="bi bi-emoji-angry"></i></button>
                 </div>
                 <div class="col-8 datebox" >
                     <p class="categoria">{{messaggio.categoria}}</p>
@@ -89,7 +89,7 @@ import axios from 'axios';
 import router from '../router';
 
 export default {
-    props: ['messaggi'],
+    props: ['messaggi', 'log'],
   data() {
     return {
     };
