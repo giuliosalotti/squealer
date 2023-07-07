@@ -33,7 +33,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <select class="form-select" v-model="tipologia">
+        <select class="form-select" v-model="tipologia" style="margin-bottom:10px;">
+          <option value="" selected>Seleziona tipologia</option>
           <option value="FOTO" selected>Foto</option>
           <option value="VIDEO">Video</option>
           <option value="MAPPA">Mappa</option>
@@ -206,10 +207,13 @@ watch: {
     },
 
     send(){
-
+        const messaggio = this.messaggio;
+        if(this.tipologia!=""){
+          messaggio = messaggio + " "+this.tipologia+":"+this.url;
+        }
         const nuovoMessaggio = {
             destinazione: this.destinatari,
-            testo: this.messaggio + " "+this.tipologia+":"+this.url,
+            testo: messaggio,
             emailutente: this.user.email,
             fotoutente: this.user.foto,
             dataOra: new Date(),
@@ -249,6 +253,7 @@ watch: {
                     quotaM: this.quotaM
                   });
                   console.log('Quotas updated successfully:', response.data);
+                  this.clean(); //per svuotare il form html
                 } catch (error) {
                   console.error('Error updating quotas:', error);
                 }
@@ -259,7 +264,19 @@ watch: {
               console.error('Errore durante l\'invio del messaggio:', error);
             });
       
-    }
+    },
+
+    clean(){
+      this.messaggio="";
+      this.destinatari=[];
+      this.quotadisposizione=null;
+      this.riduzione=false;
+      this.limitD=false;
+      this.limitW=null;
+      this.limitM=null;
+      this.url="";
+      this.tipologia="";
+    },
 
 
   }
