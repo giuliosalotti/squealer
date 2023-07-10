@@ -227,7 +227,8 @@ watch: {
             like: 0,
             dislike: 0,
             views: 0,
-            categoria:"Pubblico"
+            categoria:"Pubblico",
+            reazioni: [] 
           };
           
           axios.post('http://localhost:3000/messaggi/', nuovoMessaggio)

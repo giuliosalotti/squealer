@@ -93,6 +93,7 @@ const messaggioSchema = new mongoose.Schema({
   dislike: { type: Number, required: true },
   views: { type: Number, required: true },
   categoria: { type: String, required: true },
+  reazioni: [{ type: String }],
 });
 const Messaggio = mongoose.model('Messaggio', messaggioSchema, 'messaggi');
 
@@ -206,8 +207,8 @@ app.put('/users/changepassword', (req, res) => {
 
 //route aggiunta messaggio
 app.post('/messaggi', (req, res) => {
-  const { destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria } = req.body;
-  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria });
+  const { destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria, reazioni } = req.body;
+  const nuovoMessaggio = new Messaggio({ destinazione, testo, emailutente, fotoutente, dataOra, like, dislike, views, categoria, reazioni });
   nuovoMessaggio.save()
     .then(() => {
       res.status(201).json({ message: 'Messaggio pubblicato con successo' });

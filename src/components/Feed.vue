@@ -92,8 +92,14 @@ export default {
     props: ['messaggi', 'log'],
   data() {
     return {
+      user: null,
     };
   },
+
+  created() {
+    this.user = JSON.parse(localStorage.getItem('user'));
+  },
+
   methods: {
     removeUrl(testo) {
       const splitArray = testo.split("VIDEO:");
@@ -141,27 +147,42 @@ export default {
     },
     incrementaLike(idMessaggio){
       const messaggio = this.messaggi.find(m => m._id === idMessaggio);
-      messaggio.like++;
-      this.update(idMessaggio, messaggio);
+      if(this.checkincrement(messaggio)){
+        messaggio.like++;
+        this.update(idMessaggio, messaggio);
+      }
+ 
     },
     decrementaLike(idMessaggio){
       const messaggio = this.messaggi.find(m => m._id === idMessaggio);
-      messaggio.dislike++;
-      this.update(idMessaggio, messaggio);
+      if(this.checkincrement(messaggio)){
+        messaggio.dislike++;
+        this.update(idMessaggio, messaggio);
+      }
     },
     incrementaViews(idMessaggio){
       const messaggio = this.messaggi.find(m => m._id === idMessaggio);
       messaggio.views++;
       this.update(idMessaggio, messaggio);
     },
+    checkincrement(messaggio){
+      const reazioni = messaggio.reazioni || [];
+      if (reazioni.some(reazione => reazione === this.user.email)) {
+        console.log('L\'utente loggato è già presente nelle reazioni del messaggio.');
+        return false;
+      }else{
+        messaggio.reazioni.push(this.user.email);
+        return true;
+      }     
+    },
     update(idMessaggio, messaggio) {
-      axios.put(`http://localhost:3000/messaggi/${idMessaggio}`, messaggio)
-        .then(response => {
-          console.log('Messaggio aggiornato con successo:', response.data);
-        })
-        .catch(error => {
-          console.error('Errore durante l\'aggiornamento del messaggio:', error);
-        });
+        axios.put(`http://localhost:3000/messaggi/${idMessaggio}`, messaggio)
+          .then(response => {
+            console.log('Messaggio aggiornato con successo:', response.data);
+          })
+          .catch(error => {
+            console.error('Errore durante l\'aggiornamento del messaggio:', error);
+          });
     },
 
   }

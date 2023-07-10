@@ -25,6 +25,7 @@
         </li>
       </ul>
       <form class="d-flex" role="search">
+        <button class="btn btn-outline-success" id="pmessage" type="button" @click="mprivate(user.email)">Messaggi Privati</button>
         <button class="btn btn-outline-success" id="logout" type="submit" @click="logout">Logout</button>
       </form>
           <a href="/profile"><img class="avatar" :src="user.foto" alt=""></a>
@@ -48,6 +49,9 @@
   height: 40px;
   border-radius: 40px;
   margin-left: 20px;
+ }
+ #pmessage{
+  margin-right: 10px;
  }
  
 </style>
@@ -90,6 +94,9 @@ export default {
         console.error('Errore durante la verifica dell\'utente VIP:', error);
       });
     },
+    mprivate(email){
+      this.$emit('pmessage', email);
+    }
 
   },
   

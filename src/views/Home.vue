@@ -40,8 +40,8 @@ export default defineComponent({
     updateFeed(newValue) {
       this.destinatario = newValue;
       this.caricaMessaggi(newValue);
-    }
-
+    },
+  
   },
   components: {
     Navbar,
@@ -54,7 +54,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <Navbar :user="user" />
+    <Navbar  @pmessage="caricaMessaggi" :user="user" />
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
             <Message :user="user" :destinatario="destinatario" @update="caricaMessaggi(this.destinatario)"/>
