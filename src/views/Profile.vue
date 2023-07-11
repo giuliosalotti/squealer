@@ -59,6 +59,23 @@ export default defineComponent({
 <template>
     <Navbar :user="user" />
     <div class="container">
+        <h1>I tuoi contatori</h1>
+        <div class="row">
+            <div class="col-2 feature">
+                <h3 class="title">Giornaliera</h3>
+                <p class="punteggio">{{user.quotaD}}</p>
+            </div>
+            <div class="col-2 feature">
+                <h3 class="title">Settimanale</h3>
+                <p class="punteggio">{{user.quotaW}}</p>
+            </div>
+            <div class="col-2 feature">
+                <h3 class="title">Mensile</h3>
+                <p class="punteggio">{{user.quotaM}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
         <h1>Change password</h1>
         <form @submit.prevent="cambiapassword">
             <div class="mb-3">
@@ -81,5 +98,19 @@ export default defineComponent({
 <style scoped>
     .container{
         padding-top: 50px;
+    }
+    .punteggio{
+        font-weight: bold;
+        font-size: 30px;
+    }
+    .feature{
+        background-color: rgb(236 236 236);
+        padding: 20px;
+        margin: 20px;
+        border-radius: 20px;
+        text-align: center;
+    }
+    .title{
+        font-size: 12px;
     }
 </style>

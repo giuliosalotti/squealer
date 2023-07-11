@@ -12,9 +12,17 @@
             <iframe v-if="messaggio.testo.includes('MAPPA')" :src="getMapUrl(messaggio.testo)" class="media" frameborder="0" style="border:0" allowfullscreen></iframe>
             <div class="row footerbox">
                 <div class="col-4">
-                    <button v-if="log" class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
-                    <button v-if="log" class="btn reaction" @click="incrementaLike(messaggio._id)" >{{messaggio.like}}  <i class="bi bi-emoji-heart-eyes"></i></button>
-                    <button v-if="log" class="btn reaction" @click="decrementaLike(messaggio._id)">{{messaggio.dislike}}  <i class="bi bi-emoji-angry"></i></button>
+                  <div class="row reactionbox">
+                    <div class="col-3">
+                      <button v-if="log" class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
+                    </div>
+                    <div class="col-3">
+                      <button v-if="log" class="btn reaction" @click="incrementaLike(messaggio._id)" >{{messaggio.like}}  <i class="bi bi-emoji-heart-eyes"></i></button>
+                    </div>
+                    <div class="col-3">
+                      <button v-if="log" class="btn reaction" @click="decrementaLike(messaggio._id)">{{messaggio.dislike}}  <i class="bi bi-emoji-angry"></i></button>
+                    </div>
+                  </div>
                 </div>
                 <div class="col-8 datebox" >
                     <p class="categoria">{{messaggio.categoria}}</p>
@@ -26,6 +34,9 @@
 </template>
 
 <style scoped>
+    .reactionbox{
+      margin-bottom: 20%;
+    }
     .titolo{
         margin: 10px 0px 30px 0px;
     }

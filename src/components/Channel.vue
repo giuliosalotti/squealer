@@ -1,5 +1,17 @@
 <template>
     <div class="channelbox">
+        <!--canali a cui sei iscritto -->
+        <div class="d-flex" style="margin-bottom:35px;">
+            <h2 class="me-5 titolo" v-if="savedChannels.length > 0" >Iscrizioni</h2>
+        </div>
+        <div class="canale d-flex" v-for="canale in savedChannels" :key="canale.id" @click="choose(canale.nome)">
+            <img  class="me-2 avatar" :src="canale.immagine">
+            <p class="channelname">{{canale.nome}}</p>
+            <button class="btn info" @click="removeiscrizione(canale)"><i class="bi bi-lg bi-heart-fill"></i></button>
+            <button class="btn info" @click="getCreatorEmails(canale)"><i class="bi bi-lg bi-info-circle"></i></button>
+            <button class="btn info" @click="eliminaCanale(canale)" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
+        </div>
+        <!--canali a cui sei iscritto -->
         <div class="d-flex" style="margin-bottom:35px;">
             <h2 class="me-5 titolo">Channels</h2>
             <button type="button" class="btn btn-success btn-sm"  @click="show">{{tbtn1}}</button>
@@ -27,9 +39,11 @@
         <div class="canale d-flex" v-for="canale in canali" :key="canale.id" @click="choose(canale.nome)">
             <img  class="me-2 avatar" :src="canale.immagine">
             <p class="channelname">{{canale.nome}}</p>
+            <button class="btn info" @click="addiscrizione(canale)"><i class="bi bi-lg bi-heart"></i></button>
             <button class="btn info" @click="getCreatorEmails(canale)"><i class="bi bi-lg bi-info-circle"></i></button>
             <button class="btn info" @click="eliminaCanale(canale)" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
         </div>
+        
 
     </div>
 </template>
@@ -96,6 +110,7 @@ export default {
       creatori: [],
       nickcreatore:"",
       immagine: "",
+      savedChannels: [],
     };
   },
   
@@ -103,13 +118,30 @@ export default {
     this.user = JSON.parse(localStorage.getItem('user'));
     this.email = this.user.email;
     this.caricaCanali();
+    this.getSavedChannels();
   },
 
   
  
  
-  methods: {    
-     
+  methods: {  
+    removeiscrizione(channel){
+        const index = this.savedChannels.indexOf(channel);
+        if (index !== -1) {
+            this.savedChannels.splice(index, 1);
+            localStorage.setItem('savedChannels', JSON.stringify(this.savedChannels));
+        }
+    },  
+     //metodo per ottenere i canali salvati
+     getSavedChannels() {
+        const savedChannels = localStorage.getItem('savedChannels');
+        this.savedChannels = JSON.parse(savedChannels);
+    },
+    addiscrizione(channel){
+        this.getSavedChannels();
+        this.savedChannels.push(channel);
+        localStorage.setItem('savedChannels', JSON.stringify(this.savedChannels));
+    },
      //metodo per caricare la lista di canali
     caricaCanali() {
         axios.get('http://localhost:3000/canali')
