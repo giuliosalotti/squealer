@@ -348,11 +348,37 @@ async function aggiornaCategoriaMessaggi() {
         if (!categoria.includes("Popolare")) {
           messaggio.categoria.push("Popolare");
           await messaggio.save();
+          // Incrementa le quote dell'utente
+          await User.findOneAndUpdate(
+            { email: messaggio.emailutente },
+            { $inc: { quotaD: 100, quotaW: 100, quotaM: 100 } }
+          );
         }
       } else if (dislike > limitePopolarita && like <= limitePopolarita) {
         if (!categoria.includes("Impopolare")) {
           messaggio.categoria.push("Impopolare");
           await messaggio.save();
+          // Diminuisci le quote per l'utente
+          try {
+            const user = await User.findOne({ email: messaggio.emailutente });
+            if (!user) {
+              console.error('Utente non trovato');
+              return;
+            }
+        
+            const nuovaQuotaD = Math.max(user.quotaD - 100, 0);
+            const nuovaQuotaW = Math.max(user.quotaW - 100, 0);
+            const nuovaQuotaM = Math.max(user.quotaM - 100, 0);
+        
+            await User.findOneAndUpdate(
+              { email: messaggio.emailutente },
+              { $set: { quotaD: nuovaQuotaD, quotaW: nuovaQuotaW, quotaM: nuovaQuotaM } }
+            );
+        
+          } catch (error) {
+            console.error('Errore durante la decrementazione della quota:', error);
+          }
+
         }
       } else if (like > limitePopolarita && dislike > limitePopolarita) {
         if (categoria.includes("Popolare")) {
@@ -368,7 +394,6 @@ async function aggiornaCategoriaMessaggi() {
       }
     }
 
-    console.log("Aggiornamento delle categorie dei messaggi popolari completato con successo.");
   } catch (error) {
     console.error("Errore durante l'aggiornamento delle categorie dei messaggi popolari:", error);
   }
