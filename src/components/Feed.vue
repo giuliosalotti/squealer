@@ -12,7 +12,7 @@
             <iframe v-if="messaggio.testo.includes('MAPPA')" :src="getMapUrl(messaggio.testo)" class="media" frameborder="0" style="border:0" allowfullscreen></iframe>
             <button v-if="log && !rispondere" class="btn rispondi" @click="aprirerisposta()">Rispondi</button>
             <div class="rispostaform">
-              <div v-if="rispondere" class="input-group">
+              <div v-if="rispondere" class="input-group formrisposta">
                 <input id="inputtype" type="text" class="form-control" placeholder="volevo aggiungere che..." v-model="risposta">
                 <button class="btn" type="button" id="inviarisposta" @click="addrisposta(messaggio)">Rispondi</button>
               </div>
@@ -23,8 +23,8 @@
 
 
             <div class="row footerbox">
-                <div class="col-4">
-                  <div class="row reactionbox">
+                <div class="col-12 col-lg-4">
+                  <div class="row reactionbox" v-if="reaction">
                     <div class="col-3">
                       <button v-if="log" class="btn reaction" @click="incrementaViews(messaggio._id)">{{messaggio.views}}  <i class="bi bi-emoji-sunglasses"></i></button>
                     </div>
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-8 datebox" >
+                <div class="col-12 col-lg-8 datebox" >
                     <p class="categoria">{{messaggio.categoria}}</p>
                     <p class="date">{{getdatebyindex(i).toLocaleDateString()}} - {{getdatebyindex(i).toLocaleTimeString()}}</p>
                 </div>
@@ -103,11 +103,14 @@
    }
    .media{
     max-width: 80%;
+    min-width: 60%;
     max-height: 80%;
    }
    .rispondi{
     border: 1px solid green;
     border-radius: 10px;
+    margin-top: 20px;
+    display: block;
    }
    .risposta{
     background-color:#f8f8f885;
@@ -119,6 +122,9 @@
     background-color: #f8f8f885;
     border:0px;
    }
+   .formrisposta{
+    margin-top: 20px;
+   }
 </style>
 
 <script>
@@ -126,7 +132,7 @@ import axios from 'axios';
 import router from '../router';
 
 export default {
-    props: ['messaggi', 'log'],
+    props: ['messaggi', 'log', 'reaction'],
   data() {
     return {
       user: null,

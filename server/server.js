@@ -92,7 +92,7 @@ const messaggioSchema = new mongoose.Schema({
   like: { type: Number, required: true },
   dislike: { type: Number, required: true },
   views: { type: Number, required: true },
-  categoria: { type: String, required: true },
+  categoria: [{ type: String }],
   reazioni: [{ type: String }],
   risposte: [{ type: String }],
 });
@@ -335,6 +335,46 @@ app.delete('/canali/:id', (req, res) => {
     });
 });
 
+//controllo messaggi popolari
+async function aggiornaCategoriaMessaggi() {
+  try {
+    const messaggi = await Messaggio.find();
+
+    for (let messaggio of messaggi) {
+      const { like, dislike, views, categoria } = messaggio;
+      const limitePopolarita = views * 0.25;
+
+      if (like > limitePopolarita && dislike <= limitePopolarita) {
+        if (!categoria.includes("Popolare")) {
+          messaggio.categoria.push("Popolare");
+          await messaggio.save();
+        }
+      } else if (dislike > limitePopolarita && like <= limitePopolarita) {
+        if (!categoria.includes("Impopolare")) {
+          messaggio.categoria.push("Impopolare");
+          await messaggio.save();
+        }
+      } else if (like > limitePopolarita && dislike > limitePopolarita) {
+        if (categoria.includes("Popolare")) {
+          categoria.splice(categoria.indexOf("Popolare"), 1);
+        }
+        if (categoria.includes("Impopolare")) {
+          categoria.splice(categoria.indexOf("Impopolare"), 1);
+        }
+        if (!categoria.includes("Controverso")) {
+          messaggio.categoria.push("Controverso");
+          await messaggio.save();
+        }
+      }
+    }
+
+    console.log("Aggiornamento delle categorie dei messaggi popolari completato con successo.");
+  } catch (error) {
+    console.error("Errore durante l'aggiornamento delle categorie dei messaggi popolari:", error);
+  }
+}
+setInterval(aggiornaCategoriaMessaggi, 60000);
+//fine controllo messaggi popolari
 
 
 //avviare la funzione di controllo della quota

@@ -102,6 +102,7 @@ export default {
       limitM:null,
       url:"",
       tipologia:"",
+      categoria: [],
     };
   },
 
@@ -188,6 +189,9 @@ watch: {
       this.destinatari.forEach(destinatario => {
         if(destinatario.simbolo == '§' || destinatario.simbolo == '#'){
           this.riduzione = true;
+          this.categoria.push("Pubblico");
+        }else if(destinatario.simbolo == '@'){
+          this.categoria.push("Privato");
         }
         if(destinatario.simbolo == '#'){
           //deve creare il canale estemporaneo
@@ -227,7 +231,7 @@ watch: {
             like: 0,
             dislike: 0,
             views: 0,
-            categoria:"Pubblico",
+            categoria:this.categoria,
             reazioni: [],
             risposte: [], 
           };

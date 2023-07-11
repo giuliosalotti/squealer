@@ -17,6 +17,7 @@ export default defineComponent({
       email:'',
       user: null,
       destinatario:"public",
+      reaction: true,
     };
   },
   
@@ -29,6 +30,9 @@ export default defineComponent({
  
   methods: {
     caricaMessaggi(destinatario) {
+        if(destinatario == this.email){
+          this.reaction = false;
+        }
         axios.get(`http://localhost:3000/messaggi/${destinatario}`)
             .then(response => {
             this.messaggi = response.data;
@@ -58,7 +62,7 @@ export default defineComponent({
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
             <Message :user="user" :destinatario="destinatario" @update="caricaMessaggi(this.destinatario)"/>
-            <Feed :messaggi="messaggi" :log="true"/>
+            <Feed :messaggi="messaggi" :log="true" :reaction="reaction"/>
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">
             <Channel @feed-change="updateFeed" />
