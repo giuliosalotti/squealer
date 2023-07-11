@@ -10,6 +10,18 @@
             <img v-if="messaggio.testo.includes('FOTO')" :src="getImageSrc(messaggio.testo)" class="media">
             <video class="media" v-if="messaggio.testo.includes('VIDEO')" :src="getVideoUrl(messaggio.testo)" controls></video>
             <iframe v-if="messaggio.testo.includes('MAPPA')" :src="getMapUrl(messaggio.testo)" class="media" frameborder="0" style="border:0" allowfullscreen></iframe>
+            <button v-if="log && !rispondere" class="btn rispondi" @click="aprirerisposta()">Rispondi</button>
+            <div class="rispostaform">
+              <div v-if="rispondere" class="input-group">
+                <input id="inputtype" type="text" class="form-control" placeholder="volevo aggiungere che..." v-model="risposta">
+                <button class="btn" type="button" id="inviarisposta" @click="addrisposta(messaggio)">Rispondi</button>
+              </div>
+            </div>
+              <div class="risposta" v-for="risposta in messaggio.risposte" :key="risposta">
+                <p style="margin:0px;">{{risposta}}</p>
+              </div>
+
+
             <div class="row footerbox">
                 <div class="col-4">
                   <div class="row reactionbox">
@@ -93,6 +105,20 @@
     max-width: 80%;
     max-height: 80%;
    }
+   .rispondi{
+    border: 1px solid green;
+    border-radius: 10px;
+   }
+   .risposta{
+    background-color:#f8f8f885;
+    border-radius: 20px;
+    padding: 15px;
+    margin: 10px 0px;
+   }
+   #inviarisposta{
+    background-color: #f8f8f885;
+    border:0px;
+   }
 </style>
 
 <script>
@@ -104,6 +130,8 @@ export default {
   data() {
     return {
       user: null,
+      risposta: "",
+      rispondere: false,
     };
   },
 
@@ -112,6 +140,21 @@ export default {
   },
 
   methods: {
+    addrisposta(messaggio){
+      messaggio.risposte.push(this.risposta);
+      axios.put(`http://localhost:3000/messaggi/${messaggio._id}`, messaggio)
+        .then(response => {
+          console.log('Messaggio aggiornato con successo:', response.data);
+          this.risposta = "";
+          this.rispondere = false;
+        })
+        .catch(error => {
+          console.error('Errore durante l\'aggiornamento del messaggio:', error);
+        });
+    },
+    aprirerisposta(){
+      this.rispondere=true;
+    },
     removeUrl(testo) {
       const splitArray = testo.split("VIDEO:");
       if (splitArray.length > 1) {
