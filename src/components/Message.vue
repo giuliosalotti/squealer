@@ -3,7 +3,7 @@
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
     
     <div class="input-group">
-        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota"></textarea>
+        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
     </div>
     <div class="input-group">
@@ -82,6 +82,8 @@
 
 <script>
 import axios from 'axios';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 export default {
   props: ['user','destinatario'],
@@ -103,6 +105,7 @@ export default {
       url:"",
       tipologia:"",
       categoria: [],
+      d: false,
     };
   },
 
@@ -113,6 +116,15 @@ watch: {
   },
  
   methods: {
+    cancelcheck(event){
+      const key = event.key;
+      if (key === "Backspace" || key === "Delete") {
+        this.d = true;
+      }else{
+        this.d = false;
+      }
+    },
+    //controlla se il canale è gestito dalla redazione, non puoi scrivere messaggi
     isAllUppercase(text) {
       return text === text.toUpperCase();
     },
@@ -138,29 +150,49 @@ watch: {
     countQuota(){
       if(this.limitD==false){
         this.quotadisposizione = this.quotaD-this.messaggio.length;
+        if(this.quotaD-this.messaggio.length==0){
+          if(!this.d){
+            Toastify({
+                  text: 'Sei passato alla quota settimanale. Se non vuoi utilizzarla, cancella qualche carattere!',
+                  duration: 6000, 
+                  gravity: "bottom"
+              }).showToast();
+          }
+          this.limitD = true;
+          this.limitW = false;
+          this.quotadisposizione = this.quotaW-this.messaggio.length;
+        }
       }
-      if(this.quotaD-this.messaggio.length==0){
-        alert("Vuoi passare alla quota settimanale?");
-        this.limitD = true;
-        this.limitW = false;
+      if(this.limitW==false && this.limitD==true){
         this.quotadisposizione = this.quotaW-this.messaggio.length;
-      }
-      if(this.limitW==false){
-        this.quotadisposizione = this.quotaW-this.messaggio.length;
-      }
-      if(this.quotaW-this.messaggio.length==0){
-        alert("Vuoi passare alla quota mensile?");
-        this.limitW = true;
-        this.limitM = false;
-        this.quotadisposizione = this.quotaM-this.messaggio.length;
-      }
-      if(this.limitM==false){
+        if(this.quotaW-this.messaggio.length==0){
+          if(!this.d){
+            Toastify({
+                  text: 'Sei passato alla quota mensile. Se non vuoi utilizzarla, cancella qualche carattere!',
+                  duration: 6000, 
+                  gravity: "bottom"
+              }).showToast();
+          }
+          this.limitW = true;
+          this.limitM = false;
           this.quotadisposizione = this.quotaM-this.messaggio.length;
+        }
       }
-      if(this.quotaM-this.messaggio.length==0){
-          alert("Hai finito tutti i caratteri a disposizione");
-          this.limitM = true;
+      
+      if(this.limitM==false && this.limitD==true && this.limitW==true){
+          this.quotadisposizione = this.quotaM-this.messaggio.length;
+          if(this.quotaM-this.messaggio.length==0){
+            if(!this.d){
+              Toastify({
+                  text: 'Hai terminato tutti i tuoi caratteri. Se vuoi continuare a scrivere, cancella qualche carattere!',
+                  duration: 6000, 
+                  gravity: "bottom"
+              }).showToast();
+            }
+            this.limitM = true;
+        }
       }
+     
       //controllo se quando tutto è bloccato, l'utente sta cancellando caratteri
       if(this.quotaD-this.messaggio.length>0){
         this.limitM=null;
@@ -175,7 +207,8 @@ watch: {
         this.limitW=true;
         this.limitD=true;
       }
-      console.log(this.quotadisposizione);
+      console.log(this.quotaM);
+      console.log(this.messaggio.length);
     },
 
     //metodo per rimuovere un destinatario prima di aver inviato il messaggio
