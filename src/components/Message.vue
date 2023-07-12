@@ -1,5 +1,5 @@
 <template>
-<form class="form" @submit.prevent="inviaMessaggio">
+<form class="form" v-if="!isAllUppercase(destinatario)" @submit.prevent="inviaMessaggio">
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
     
     <div class="input-group">
@@ -113,7 +113,9 @@ watch: {
   },
  
   methods: {
-
+    isAllUppercase(text) {
+      return text === text.toUpperCase();
+    },
     //metodo per ottenere la quota nel momento in cui inizi a scrivere il messaggio
     async getQuota(){
       event.preventDefault();

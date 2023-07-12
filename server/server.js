@@ -347,6 +347,7 @@ async function aggiornaCategoriaMessaggi() {
       if (like > limitePopolarita && dislike <= limitePopolarita) {
         if (!categoria.includes("Popolare")) {
           messaggio.categoria.push("Popolare");
+          messaggio.destinazione.push({simbolo: "§", destinatario:"TRENDING"});
           await messaggio.save();
           // Incrementa le quote dell'utente
           await User.findOneAndUpdate(
@@ -389,6 +390,7 @@ async function aggiornaCategoriaMessaggi() {
         }
         if (!categoria.includes("Controverso")) {
           messaggio.categoria.push("Controverso");
+          messaggio.destinazione.push({simbolo: "§", destinatario:"CONTROVERSIAL"});
           await messaggio.save();
         }
       }
@@ -400,6 +402,33 @@ async function aggiornaCategoriaMessaggi() {
 }
 setInterval(aggiornaCategoriaMessaggi, 60000);
 //fine controllo messaggi popolari
+
+//creazione canale top 1000
+async function topmille() {
+  try {
+    const top1000Messaggi = await Messaggio.find()
+      .sort({ like: -1 })
+      .limit(1000);
+
+    const top1000Destinazione = { simbolo:"§", destinatario: 'TOP_1000' };
+    await Messaggio.updateMany(
+      { 'destinazione.destinatario': 'TOP_1000' },
+      { $pull: { destinazione: { destinatario: 'TOP_1000' } } }
+    );
+
+    // Aggiungi l'oggetto { dest: 'Top1000' } ai primi 1000 messaggi in ordine di like
+    await Promise.all(
+      top1000Messaggi.map(messaggio =>
+        Messaggio.findByIdAndUpdate(messaggio._id, { $push: { destinazione: { simbolo:"§", destinatario: 'TOP_1000' } } })
+      )
+    );
+    console.log('Aggiornamento della destinazione Top1000 completato con successo.');
+  } catch (error) {
+    console.error('Errore durante l\'aggiornamento della destinazione Top1000:', error);
+  }
+}
+setInterval(topmille, 3600000);
+//creazione canale top1000
 
 
 //avviare la funzione di controllo della quota
