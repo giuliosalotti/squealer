@@ -494,7 +494,7 @@ async function getTriviaFromAPI() {
     console.error('Errore durante l\'ottenimento delle news:', error);
   }
 }
-setInterval(getTriviaFromAPI, 6000);
+setInterval(getTriviaFromAPI, 3600000);
 //creazione messaggi temporizzati
 
 //avviare la funzione di controllo della quota
