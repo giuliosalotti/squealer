@@ -1,5 +1,17 @@
 <template>
     <div class="channelbox">
+        <!--ricerca canali-->
+        <h2 style="margin-bottom:30px;">Ricerca Canali</h2>
+        <input @input="searchChannels" class="form-control search" type="text" v-model="searchQuery" placeholder="Cerca canale" />
+        <div class="canale d-flex" v-for="canale in filteredCanali" :key="canale.id" @click="choose(canale.nome)">
+            <img  class="me-2 avatar" :src="canale.immagine">
+            <p class="channelname">{{canale.nome}}</p>
+            <button class="btn info" @click="addiscrizione(canale)"><i class="bi bi-lg bi-heart"></i></button>
+            <button class="btn info" @click="getCreatorEmails(canale)"><i class="bi bi-lg bi-info-circle"></i></button>
+            <button class="btn info" @click="eliminaCanale(canale)" v-if="isCreator(canale)"><i class="bi bi-trash"></i></button>
+        </div>
+        <!--ricerca canali-->
+
         <!--canali a cui sei iscritto -->
         <div class="d-flex" style="margin-bottom:35px;">
             <h2 class="me-5 titolo" v-if="savedChannels.length > 0" >Iscrizioni</h2>
@@ -90,6 +102,9 @@
    .channelname{
     width: 50%;
    }
+   .search{
+    margin-bottom: 40px;
+   }
 </style>
 
 <script lang="ts">
@@ -111,6 +126,9 @@ export default {
       nickcreatore:"",
       immagine: "",
       savedChannels: [],
+      searchQuery: "",
+      ricerca:[],
+      filteredCanali:[],
     };
   },
   
@@ -125,6 +143,14 @@ export default {
  
  
   methods: {  
+    searchChannels(){
+        if(this.searchQuery != ""){
+            this.filteredCanali = this.canali.filter(canale => {
+                return canale.nome.toLowerCase().includes(this.searchQuery.toLowerCase());
+            });
+        }
+        
+    },
     removeiscrizione(channel){
         const index = this.savedChannels.indexOf(channel);
         if (index !== -1) {
