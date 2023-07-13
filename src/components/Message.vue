@@ -4,13 +4,13 @@
     
     <div class="input-group">
         <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
-         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
+         <span v-if="pubblico" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
     </div>
     <div class="input-group">
         <select class="form-select input-group-text" v-model="simbolo">
-          <option value="@">@</option>
-          <option value="§">§</option>
-          <option value="#">#</option>
+          <option v-if="privato" value="@">@</option>
+          <option v-if="pubblico" value="§">§</option>
+          <option v-if="pubblico" value="#">#</option>
         </select>
         <input id="inputtype" type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="dest">
         <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="addDestinatario()">Add</button>
@@ -106,6 +106,8 @@ export default {
       tipologia:"",
       categoria: [],
       d: false,
+      privato: true,
+      pubblico: true,
     };
   },
 
@@ -148,6 +150,7 @@ watch: {
     },
     //metodo locale per l'aggiornamento della quota
     countQuota(){
+      if(this.pubblico){
       if(this.limitD==false){
         this.quotadisposizione = this.quotaD-this.messaggio.length;
         if(this.quotaD-this.messaggio.length==0){
@@ -209,40 +212,58 @@ watch: {
       }
       console.log(this.quotaM);
       console.log(this.messaggio.length);
+      }
     },
 
     //metodo per rimuovere un destinatario prima di aver inviato il messaggio
     rimuoviDestinatario(identificatore) {
       this.destinatari = this.destinatari.filter(destinatario => destinatario.destinatario !== identificatore);
+      if(this.destinatari.length==0){
+        this.privato = true;
+        this.pubblico = true;
+      }
     },
     addDestinatario(){
+      //se il destinatario è privato non faccio inserire messaggi pubblici
+      if(this.simbolo=='§' || this.simbolo=='#' && !this.destinatari.some(destinatario => destinatario.includes('@'))){
+        this.pubblico = true;
+        this.privato = false;
+      }
+      if(this.simbolo=='@' && !this.destinatari.some(destinatario => destinatario.includes('§')) && !this.destinatari.some(destinatario => destinatario.includes('#'))){
+        this.privato = true;
+        this.pubblico = false;
+      }
       this.destinatari.push({simbolo: this.simbolo, destinatario: this.dest});
       this.dest = '';
     },
 
     inviaMessaggio() {
-      this.destinatari.forEach(destinatario => {
-        if(destinatario.simbolo == '§' || destinatario.simbolo == '#'){
-          this.riduzione = true;
-          this.categoria.push("Pubblico");
-        }else if(destinatario.simbolo == '@'){
-          this.categoria.push("Privato");
-        }
-        if(destinatario.simbolo == '#'){
-          //deve creare il canale estemporaneo
-          this.creatori.push(this.user);
-          axios.post('http://localhost:3000/canali', {
-              nome: destinatario.destinatario,
-              immagine: "https://images.unsplash.com/photo-1499988921418-b7df40ff03f9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bm90aGluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-              creatore: this.creatori
-          }).then(response => {
-              console.log('Canale aggiunto con successo:', response.data);
-          }).catch(error => {
-              console.error('Errore durante l\'aggiunta del canale:', error);
-          });
-        }
-      });
-      this.send();
+      if(this.messaggio.length>0 && this.destinatari.length>0){   
+        this.destinatari.forEach(destinatario => {
+          if(destinatario.simbolo == '§' || destinatario.simbolo == '#'){
+            //this.riduzione = true;
+            this.categoria.push("Pubblico");
+          }else if(destinatario.simbolo == '@'){
+            this.categoria.push("Privato");
+          }
+          if(destinatario.simbolo == '#'){
+            //deve creare il canale estemporaneo
+            this.creatori.push(this.user);
+            axios.post('http://localhost:3000/canali', {
+                nome: destinatario.destinatario,
+                immagine: "https://images.unsplash.com/photo-1499988921418-b7df40ff03f9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bm90aGluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+                creatore: this.creatori
+            }).then(response => {
+                console.log('Canale aggiunto con successo:', response.data);
+            }).catch(error => {
+                console.error('Errore durante l\'aggiunta del canale:', error);
+            });
+          }
+        });
+        this.send();
+      }else{
+        this.toast("Errore pubblicazione! Devi inserire il testo del messaggio oppure qualche destinatario.");
+      }
     },
 
     send(){
@@ -276,7 +297,7 @@ watch: {
               console.log('Messaggio inviato con successo:', response.data);
               this.$emit('update');
               //aggiorno quota
-              if(this.riduzione){
+              if(this.pubblico && !this.privato){
                 if(this.limitD){
                   this.quotaD = 0;
                 }else{
@@ -326,6 +347,13 @@ watch: {
       this.tipologia="";
     },
 
+    toast(testo){
+      Toastify({
+                  text: testo,
+                  duration: 6000, 
+                  gravity: "bottom"
+      }).showToast();
+    }
 
   }
 };
