@@ -64,7 +64,7 @@ export default {
   methods:{
     logout(){
       localStorage.removeItem('user');
-      router.push({ name: 'Login' });
+      router.push({ name: 'Preview' });
     }
   },
   

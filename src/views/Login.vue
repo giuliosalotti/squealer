@@ -18,7 +18,6 @@ export default defineComponent({
   methods: {
     async login() {
     event.preventDefault();
-    event.stopPropagation();
     try {
       const response = await axios.post('http://localhost:3000/login/login', {
         email: this.email,

@@ -75,7 +75,7 @@ export default {
     },
     logout(){
       localStorage.removeItem('user');
-      router.push({ name: 'Login' });
+      router.push({ name: 'Preview' });
     },
     checkvip(user){
       axios.get(`http://localhost:3000/vip/check/${user.email}`)

@@ -15,7 +15,7 @@ export default defineComponent({
     return {
       messaggi:[],
       destinatario:"public",
-      canali:["public","TRIVIA", "CITAZIONI", "TOP1000", "CONTROVERSIAL", "TRENDING"],
+      canali:["public","TRIVIA", "CITAZIONI", "TOP_1000", "CONTROVERSIAL", "TRENDING"],
     };
   },
   
