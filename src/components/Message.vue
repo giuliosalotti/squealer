@@ -3,7 +3,7 @@
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
     
     <div class="input-group">
-        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
+        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="!pubblico ? undefined : quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
          <span v-if="pubblico" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
     </div>
     <div class="input-group">
@@ -151,67 +151,67 @@ watch: {
     //metodo locale per l'aggiornamento della quota
     countQuota(){
       if(this.pubblico){
-      if(this.limitD==false){
-        this.quotadisposizione = this.quotaD-this.messaggio.length;
-        if(this.quotaD-this.messaggio.length==0){
-          if(!this.d){
-            Toastify({
-                  text: 'Sei passato alla quota settimanale. Se non vuoi utilizzarla, cancella qualche carattere!',
-                  duration: 6000, 
-                  gravity: "bottom"
-              }).showToast();
-          }
-          this.limitD = true;
-          this.limitW = false;
-          this.quotadisposizione = this.quotaW-this.messaggio.length;
-        }
-      }
-      if(this.limitW==false && this.limitD==true){
-        this.quotadisposizione = this.quotaW-this.messaggio.length;
-        if(this.quotaW-this.messaggio.length==0){
-          if(!this.d){
-            Toastify({
-                  text: 'Sei passato alla quota mensile. Se non vuoi utilizzarla, cancella qualche carattere!',
-                  duration: 6000, 
-                  gravity: "bottom"
-              }).showToast();
-          }
-          this.limitW = true;
-          this.limitM = false;
-          this.quotadisposizione = this.quotaM-this.messaggio.length;
-        }
-      }
-      
-      if(this.limitM==false && this.limitD==true && this.limitW==true){
-          this.quotadisposizione = this.quotaM-this.messaggio.length;
-          if(this.quotaM-this.messaggio.length==0){
+        if(this.limitD==false){
+          this.quotadisposizione = this.quotaD-this.messaggio.length;
+          if(this.quotaD-this.messaggio.length<=0){
             if(!this.d){
               Toastify({
-                  text: 'Hai terminato tutti i tuoi caratteri. Se vuoi continuare a scrivere, cancella qualche carattere!',
-                  duration: 6000, 
-                  gravity: "bottom"
-              }).showToast();
+                    text: 'Sei passato alla quota settimanale. Se non vuoi utilizzarla, cancella qualche carattere!',
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
             }
-            this.limitM = true;
+            this.limitD = true;
+            this.limitW = false;
+            this.quotadisposizione = this.quotaW-this.messaggio.length;
+          }
         }
-      }
-     
-      //controllo se quando tutto è bloccato, l'utente sta cancellando caratteri
-      if(this.quotaD-this.messaggio.length>0){
-        this.limitM=null;
-        this.limitW=null;
-        this.limitD=false;
-      }else if(this.quotaW-this.messaggio.length>0){
-        this.limitM=null;
-        this.limitW=false;
-        this.limitD=true;
-      }else if(this.quotaM-this.messaggio.length>0){
-        this.limitM=false;
-        this.limitW=true;
-        this.limitD=true;
-      }
-      console.log(this.quotaM);
-      console.log(this.messaggio.length);
+        if(this.limitW==false && this.limitD==true){
+          this.quotadisposizione = this.quotaW-this.messaggio.length;
+          if(this.quotaW-this.messaggio.length<=0){
+            if(!this.d){
+              Toastify({
+                    text: 'Sei passato alla quota mensile. Se non vuoi utilizzarla, cancella qualche carattere!',
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
+            }
+            this.limitW = true;
+            this.limitM = false;
+            this.quotadisposizione = this.quotaM-this.messaggio.length;
+          }
+        }
+        
+        if(this.limitM==false && this.limitD==true && this.limitW==true){
+            this.quotadisposizione = this.quotaM-this.messaggio.length;
+            if(this.quotaM-this.messaggio.length<=0){
+              if(!this.d){
+                Toastify({
+                    text: 'Hai terminato tutti i tuoi caratteri. Se vuoi continuare a scrivere, cancella qualche carattere!',
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
+              }
+              this.limitM = true;
+          }
+        }
+      
+        //controllo se quando tutto è bloccato, l'utente sta cancellando caratteri
+        if(this.quotaD-this.messaggio.length>0){
+          this.limitM=null;
+          this.limitW=null;
+          this.limitD=false;
+        }else if(this.quotaW-this.messaggio.length>0){
+          this.limitM=null;
+          this.limitW=false;
+          this.limitD=true;
+        }else if(this.quotaM-this.messaggio.length>0){
+          this.limitM=false;
+          this.limitW=true;
+          this.limitD=true;
+        }
+        console.log(this.quotaM);
+        console.log(this.messaggio.length);
       }
     },
 
@@ -322,12 +322,12 @@ watch: {
                     quotaM: this.quotaM
                   });
                   console.log('Quotas updated successfully:', response.data);
-                  this.clean(); //per svuotare il form html
                 } catch (error) {
                   console.error('Error updating quotas:', error);
                 }
                 //
               }
+              this.clean(); 
             })
             .catch(error => {
               console.error('Errore durante l\'invio del messaggio:', error);
@@ -345,6 +345,8 @@ watch: {
       this.limitM=null;
       this.url="";
       this.tipologia="";
+      this.pubblico = true;
+      this.privato = true;
     },
 
     toast(testo){
