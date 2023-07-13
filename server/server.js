@@ -484,7 +484,7 @@ async function getQuotesFromAPI() {
 
     console.log('News ottenute correttamente.');
   } catch (error) {
-    console.error('Errore durante l\'ottenimento delle news:', error);
+    console.error('Errore durante l\'ottenimento delle citazioni:', error);
   }
 }
 setInterval(getQuotesFromAPI, 3600000);
@@ -516,7 +516,7 @@ async function getTriviaFromAPI() {
 
     console.log('News ottenute correttamente.');
   } catch (error) {
-    console.error('Errore durante l\'ottenimento delle news:', error);
+    console.error('Errore durante l\'ottenimento trivia:', error);
   }
 }
 setInterval(getTriviaFromAPI, 3600000);

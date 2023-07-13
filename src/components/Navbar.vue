@@ -17,9 +17,6 @@
         <li class="nav-item">
             <RouterLink class="nav-link active" to="/home" @click="home">Home</RouterLink>
         </li>
-        <li class="nav-item">
-          <RouterLink class="nav-link active" to="/About">About</RouterLink>
-        </li>
         <li class="nav-item" v-if="showVipButton">
           <RouterLink class="nav-link active" to="/vip">Vip Dashboard</RouterLink>
         </li>

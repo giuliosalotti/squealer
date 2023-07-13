@@ -17,9 +17,7 @@
         <li class="nav-item">
             <RouterLink class="nav-link active" to="/home">Home</RouterLink>
         </li>
-        <li class="nav-item">
-          <RouterLink class="nav-link active" to="/About">About</RouterLink>
-        </li>
+      
       </ul>
       <form class="d-flex" role="search">
         <button class="btn btn-outline-success" id="logout" type="submit" @click="logout">Logout</button>

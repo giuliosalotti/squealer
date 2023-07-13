@@ -1,11 +1,6 @@
 <template>
 <form class="form" v-if="!isAllUppercase(destinatario)" @submit.prevent="inviaMessaggio">
     <h3 style="margin-bottom:30px;">Scrivi qualcosa...</h3>
-    
-    <div class="input-group">
-        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="!pubblico ? undefined : quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
-         <span v-if="pubblico" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
-    </div>
     <div class="input-group">
         <select class="form-select input-group-text" v-model="simbolo">
           <option v-if="privato" value="@">@</option>
@@ -15,6 +10,11 @@
         <input id="inputtype" type="text" class="form-control" placeholder="public" aria-label="Username" aria-describedby="basic-addon1" v-model="dest">
         <button class="btn btn-outline-secondary" type="button" id="button-addon2" @click="addDestinatario()">Add</button>
     </div>
+    <div class="input-group">
+        <textarea class="form-control messaggio" placeholder="Voglio scrivere..." :maxlength="!pubblico ? undefined : quotaM" v-model="messaggio" @input.once="getQuota" @input="countQuota" @keydown="cancelcheck"></textarea>
+         <span v-if="pubblico" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{quotadisposizione}}</span>
+    </div>
+    
     <div class="d-flex">    
       <span class="badge text-bg-dark" v-for="destinatario in destinatari" :key="destinatario">{{destinatario.simbolo}} {{destinatario.destinatario}}
           <button class="btn btn-sm btn-light ml-2 bbadge" @click="rimuoviDestinatario(destinatario.destinatario)">&times;</button>
