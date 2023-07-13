@@ -105,6 +105,13 @@
     max-width: 80%;
     max-height: 80%;
    }
+
+   @media only screen and (max-width: 768px) {
+    .feature{
+        padding: 3px;
+        margin: 10px;
+    }
+  }
 </style>
 
 <script>

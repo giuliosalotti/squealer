@@ -265,7 +265,7 @@ app.get('/messaggi/vip/:emailutente', (req, res) => {
 //top 10 trend
 app.get('/vip/trends', (req, res) => {
   Messaggio.find()
-    .sort({ views: -1 })
+    .sort({ like: -1 })
     .limit(10)
     .then(messaggi => {
       res.status(200).json(messaggi);
@@ -273,6 +273,31 @@ app.get('/vip/trends', (req, res) => {
     .catch(error => {
       console.error('Errore durante il recupero dei messaggi:', error);
       res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
+    });
+});
+//top 10 unpopular
+app.get('/vip/unpopular', (req, res) => {
+  Messaggio.find()
+    .sort({ dislike: -1 })
+    .limit(10)
+    .then(messaggi => {
+      res.status(200).json(messaggi);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei messaggi:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei messaggi' });
+    });
+});
+//top 10 controversial
+app.get('/vip/controversial', (req, res) => {
+  Messaggio.find({ categoria: { $in: ['Controverso'] } })
+    .limit(10)
+    .then(messaggiControversi => {
+      res.status(200).json(messaggiControversi);
+    })
+    .catch(error => {
+      console.error('Errore durante il recupero dei messaggi controversi:', error);
+      res.status(500).json({ message: 'Errore durante il recupero dei messaggi controversi' });
     });
 });
 

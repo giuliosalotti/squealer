@@ -18,6 +18,8 @@ export default defineComponent({
       email:'',
       user: null,
       destinatario:"public",
+      unpopular: [],
+      controversial: [],
     };
   },
   
@@ -43,6 +45,20 @@ export default defineComponent({
         axios.get('http://localhost:3000/vip/trends')
         .then(response => {
             this.trends = response.data;
+        })
+        .catch(error => {
+            console.error('Errore durante la richiesta dei messaggi:', error);
+        });
+        axios.get('http://localhost:3000/vip/unpopular')
+        .then(response => {
+            this.unpopular = response.data;
+        })
+        .catch(error => {
+            console.error('Errore durante la richiesta dei messaggi:', error);
+        });
+        axios.get('http://localhost:3000/vip/controversial')
+        .then(response => {
+            this.controversial = response.data;
         })
         .catch(error => {
             console.error('Errore durante la richiesta dei messaggi:', error);
@@ -85,6 +101,7 @@ export default defineComponent({
             <FeedVip :messaggi="messaggi" />
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">
+          <div>
             <h2 style="margin: 10px 0px 40px 0px;">Top 10 Trends</h2>
             <ol class="list-group list-group-numbered">
                 <li class="list-group-item d-flex justify-content-between align-items-start" v-for="trend in trends" :key="trend._id">
@@ -92,9 +109,35 @@ export default defineComponent({
                     <div class="fw-bold">{{trend.emailutente}}</div>
                     {{ removeUrl(trend.testo) }}
                     </div>
-                    <span class="badge bg-danger rounded-pill">{{trend.views}}</span>
+                    <span class="badge bg-danger rounded-pill">{{trend.like}}</span>
                 </li>
             </ol>
+          </div>
+          <div>
+            <h2 style="margin: 40px 0px 40px 0px;">Top 10 Unpopular</h2>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start" v-for="trend in unpopular" :key="trend._id">
+                    <div class="ms-2 me-auto">
+                    <div class="fw-bold">{{trend.emailutente}}</div>
+                    {{ removeUrl(trend.testo) }}
+                    </div>
+                    <span class="badge bg-danger rounded-pill">{{trend.dislike}}</span>
+                </li>
+            </ol>
+          </div>  
+           <div>
+            <h2 style="margin: 40px 0px 40px 0px;">Top 10 Controversial</h2>
+            <ol class="list-group list-group-numbered">
+                <li class="list-group-item d-flex justify-content-between align-items-start" v-for="trend in controversial" :key="trend._id">
+                    <div class="ms-2 me-auto">
+                    <div class="fw-bold">{{trend.emailutente}}</div>
+                    {{ removeUrl(trend.testo) }}
+                    </div>
+                    <span class="badge bg-danger rounded-pill">{{trend.like}}</span>
+                    <span style="margin-left:5px;" class="badge bg-danger rounded-pill">{{trend.dislike}}</span>
+                </li>
+            </ol>
+          </div> 
         </div>
 
     </div>
