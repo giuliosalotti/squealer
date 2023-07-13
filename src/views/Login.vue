@@ -3,6 +3,8 @@ import { defineComponent } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import axios from 'axios';
 import router from '../router';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 export default defineComponent({
   name: 'Login', 
@@ -16,6 +18,7 @@ export default defineComponent({
   methods: {
     async login() {
     event.preventDefault();
+    event.stopPropagation();
     try {
       const response = await axios.post('http://localhost:3000/login/login', {
         email: this.email,
@@ -27,7 +30,11 @@ export default defineComponent({
         router.push({ name: 'Home' });
       }
     } catch (error) {
-      // Gestisci gli errori qui
+      Toastify({
+                    text: 'Qualcosa non va:' + error,
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
     }
   },
   },
@@ -52,10 +59,7 @@ export default defineComponent({
             <label for="exampleInputPassword1" class="form-label">Password</label>
             <input v-model="password" type="password" class="form-control" id="exampleInputPassword1">
         </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
+    
         <button @click="login()" type="submit" class="btn btn-primary">Login</button>
     </form>
 </main>

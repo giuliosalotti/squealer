@@ -3,6 +3,8 @@ import { defineComponent } from 'vue';
 import Navbar from '../components/Navbar.vue';
 import axios from 'axios';
 import router from '../router';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 export default defineComponent({
   name: 'Signin', 
@@ -25,9 +27,18 @@ export default defineComponent({
         quotaW: 3500,
         quotaM: 14000,
       });
+      Toastify({
+                    text: 'Registrazione effettuata con successo!',
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
       router.push({ name: 'Login' });
     } catch (error) {
-      // Gestisci gli errori qui
+      Toastify({
+                    text: 'Qualcosa non va:' + error,
+                    duration: 6000, 
+                    gravity: "bottom"
+                }).showToast();
     }
   },
   },
@@ -42,7 +53,7 @@ export default defineComponent({
 <main>
     <h1>Sign-in</h1>
 
-    <form>
+    <form @submit="signin">
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Email address</label>
             <input v-model="email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
@@ -56,7 +67,7 @@ export default defineComponent({
             <label for="exampleInputPassword1" class="form-label">Foto profilo</label>
             <input v-model="foto" type="text" placeholder="https://" class="form-control" id="urlfoto" required>
         </div>
-        <button @click="signin()" type="submit" class="btn btn-primary">Sign-in</button>
+        <button type="submit" class="btn btn-primary">Sign-in</button>
     </form>
 </main>
 </template>
