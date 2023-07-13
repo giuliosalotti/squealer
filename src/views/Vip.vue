@@ -4,9 +4,9 @@ import VipNav from '../components/VipNav.vue';
 import FeedVip from '../components/FeedVip.vue';
 import Channel from '../components/Channel.vue';
 import Message from '../components/Message.vue';
+import Graph from '../components/Graph.vue';
 import axios from 'axios';
 import router from '../router';
-
 
 
 export default defineComponent({
@@ -29,8 +29,7 @@ export default defineComponent({
     this.caricaMessaggi(this.email);
     this.caricatrend();
   },
- 
- 
+
   methods: {
     caricaMessaggi(email) {
         axios.get(`http://localhost:3000/messaggi/vip/${email}`)
@@ -88,7 +87,8 @@ export default defineComponent({
     VipNav,
     FeedVip,
     Channel,
-    Message
+    Message,
+    Graph,
   }
 });
 
@@ -98,7 +98,9 @@ export default defineComponent({
     <VipNav :user="user" />
     <div class="row">
         <div class="col-sm-12 col-md-6 col-lg-9">
-            <FeedVip :messaggi="messaggi" />
+         
+          <Graph :messaggi="messaggi" />
+          <FeedVip :messaggi="messaggi" />
         </div>
         <div class="col-sm-12 col-md-6 col-lg-3 right">
           <div>
